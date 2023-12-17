@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-veiculo',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './veiculo.component.html',
   styleUrl: './veiculo.component.css'
 })
