@@ -1,13 +1,21 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { SharedComponents } from '../../shared';
 
 @Component({
   selector: 'app-veiculo',
   standalone: true,
-  imports: [RouterModule],
+  imports: [SharedComponents],
   templateUrl: './veiculo.component.html',
   styleUrl: './veiculo.component.css'
 })
 export class VeiculoComponent {
+
+  cadastrar(){
+    alert("teste");
+  }
+
+  salvar(){
+
+  }
 
 }
