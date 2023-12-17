@@ -1,0 +1,18 @@
+mat-grid-tile {
+    background: var(--mat-toolbar-container-background-color);
+}
+
+mat-grid-list {
+    margin-top: 50px;
+    font-size: 18px;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+mat-grid-tile {
+    cursor: pointer;
+}
+
+mat-grid-tile:hover {
+    background-color: #DCDCDC;
+}
