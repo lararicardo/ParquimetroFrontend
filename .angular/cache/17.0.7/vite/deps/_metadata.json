@@ -1,0 +1,65 @@
+{
+  "hash": "4b3c8262",
+  "browserHash": "6b23a03a",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "921ca2bc",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "618b5658",
+      "needsInterop": false
+    },
+    "@angular/material/grid-list": {
+      "src": "../../../../../node_modules/@angular/material/fesm2022/grid-list.mjs",
+      "file": "@angular_material_grid-list.js",
+      "fileHash": "5af3af5b",
+      "needsInterop": false
+    },
+    "@angular/material/toolbar": {
+      "src": "../../../../../node_modules/@angular/material/fesm2022/toolbar.mjs",
+      "file": "@angular_material_toolbar.js",
+      "fileHash": "9b77f15d",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "ab06d611",
+      "needsInterop": false
+    },
+    "@angular/platform-browser/animations": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/animations.mjs",
+      "file": "@angular_platform-browser_animations.js",
+      "fileHash": "391e35b0",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "a846d594",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-UDEC7R5F": {
+      "file": "chunk-UDEC7R5F.js"
+    },
+    "chunk-5RCX4JOX": {
+      "file": "chunk-5RCX4JOX.js"
+    },
+    "chunk-NQ2YGTPH": {
+      "file": "chunk-NQ2YGTPH.js"
+    },
+    "chunk-XBXXCVM6": {
+      "file": "chunk-XBXXCVM6.js"
+    },
+    "chunk-3Q7CJNOI": {
+      "file": "chunk-3Q7CJNOI.js"
+    }
+  }
+}
