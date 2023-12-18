@@ -7,7 +7,7 @@
         <div class="form-group col-3">
             <label for="placa">Placa</label>
             <div class="input-group-append">
-                <input type="text" class="form-control" id="placa">
+                <input type="text" class="form-control" id="placa" [ngModel]="veiculo.placa">
                 <button id="pesquisar" class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
             </div>
         </div>
@@ -16,15 +16,15 @@
     <div class="div row">
         <div class="form-group col-4">
             <label for="marca">Marca</label>
-            <input type="text" class="form-control" id="marca">
+            <input type="text" class="form-control" id="marca" [ngModel]="veiculo.marca">
         </div>
         <div class="form-group col-4">
             <label for="modelo">Modelo</label>
-            <input type="text" class="form-control" id="modelo">
+            <input type="text" class="form-control" id="modelo" [ngModel]="veiculo.modelo">
         </div>
         <div class="form-group col-md-4">
             <label for="cor">State</label>
-            <select id="cor" class="form-control">
+            <select id="cor" class="form-control" [ngModel]="veiculo.cor">
                 <option selected>Escolha a Cor</option>
                 <option>Azul</option>
                 <option>Preto</option>
