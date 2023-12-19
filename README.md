@@ -28,10 +28,15 @@ $ ng g component {NomeDoComponente}
 Resultado esperado:
 ![Alt text](image.png)
 
+Outros Comandos
+$ ng g service {NomeDaService}
+$ ng g class {NomeDoModel}
+
+
 # Framework Visual
 
-Como layout usaremos o angular material
-https://material.angular.io/components/categories
+Como layout usaremos o bootstrap
+https://getbootstrap.com/docs/4.0/components/alerts/
 
 # ParquimetroFront
 

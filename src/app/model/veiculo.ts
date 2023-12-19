@@ -3,5 +3,7 @@ export class Veiculo {
     marca!: string;
     modelo!: string;
     cor!: string;
+    anoFabricacao!: string;
+    anoModelo!: string;
     dataCadastro!: Date;
 }
