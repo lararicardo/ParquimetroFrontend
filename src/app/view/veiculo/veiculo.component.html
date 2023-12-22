@@ -3,7 +3,8 @@
 </nav>
 
 <div class="container">
-    <div class="alert alert-success" role="alert" *ngIf="messageAlert">Veículo cadastrado com sucesso
+    <div class="alert alert-info" role="alert" *ngIf="exibeMensagem">
+        {{ textoMensagem }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -24,40 +25,39 @@
         </div>
         <div class="form-group col-4">
             <label for="marca">Marca</label>
-            <input type="text" class="form-control" id="marca" [(ngModel)]="veiculo.marca">
+            <input type="text" [disabled]="inputDisabled" class="form-control" id="marca" [(ngModel)]="veiculo.marca">
         </div>
         <div class="form-group col-5">
             <label for="modelo">Modelo</label>
-            <input type="text" class="form-control" id="modelo" [(ngModel)]="veiculo.modelo">
+            <input type="text" [disabled]="inputDisabled" class="form-control" id="modelo" [(ngModel)]="veiculo.modelo">
         </div>
         <div class="form-group col-4">
             <label for="anoFabricacao">Ano Fabricação</label>
-            <input type="text" class="form-control" id="anoFabricacao" [(ngModel)]="veiculo.anoFabricacao">
+            <input type="text" [disabled]="inputDisabled" class="form-control" id="anoFabricacao" [(ngModel)]="veiculo.anoFabricacao">
         </div>
         <div class="form-group col-4">
             <label for="anoModelo">Ano Modelo</label>
-            <input type="text" class="form-control" id="anoModelo" [(ngModel)]="veiculo.anoModelo">
+            <input type="text" [disabled]="inputDisabled" class="form-control" id="anoModelo" [(ngModel)]="veiculo.anoModelo">
         </div>
         <div class="form-group col-md-4">
             <label for="cor">Cor</label>
-            <select id="cor" class="form-control" [(ngModel)]="veiculo.cor">
+            <select id="cor" [disabled]="inputDisabled" class="form-control" [(ngModel)]="veiculo.cor">
                 <option selected>Escolha a Cor</option>
-                <option>Azul</option>
-                <option>Preto</option>
+                <option *ngFor="let cor of cores">{{ cor }}</option>
             </select>
         </div>
 
         <div class="col-12 text-right button-group">
-            <button type="button" class="btn btn-primary" (click)="salvar()">Salvar</button>
-            <button type="button" class="btn btn-primary" (click)="alterar()">Alterar</button>
-            <button type="button" class="btn btn-primary" (click)="excluir()">Excluir</button>
+            <button type="button" class="btn btn-primary" (click)="novo()">Novo</button>
+            <button type="button" [disabled]="inputDisabled" class="btn btn-primary" (click)="salvar()">Salvar</button>
+            <button type="button" [disabled]="inputDisabled" class="btn btn-primary" (click)="alterar()">Alterar</button>
+            <button type="button" [disabled]="inputDisabled" class="btn btn-primary" (click)="excluir()">Excluir</button>
         </div>
     </div>
 
     <table class="table table-striped">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Placa</th>
                 <th scope="col">Marca</th>
                 <th scope="col">Modelo</th>
@@ -68,15 +68,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let veiculo of listaDeVeiculos">
-                <td></td>
-                <td>{{veiculo.placa}}</td>
-                <td>{{veiculo.marca}}</td>
-                <td>{{veiculo.modelo}}</td>
-                <td>{{veiculo.anoFabricacao}}</td>
-                <td>{{veiculo.anoModelo}}</td>
-                <td>{{veiculo.cor}}</td>
-                <td>{{veiculo.dataCadastro}}</td>
+            <tr (click)="selecionarVeiculo(veiculo)" *ngFor="let veiculo of listaDeVeiculos" [className]="veiculoSelecionado == veiculo ? 'selecionado' : ''">
+                <td>{{ veiculo.placa }}</td>
+                <td>{{ veiculo.marca }}</td>
+                <td>{{ veiculo.modelo }}</td>
+                <td>{{ veiculo.anoFabricacao }}</td>
+                <td>{{ veiculo.anoModelo }}</td>
+                <td>{{ veiculo.cor }}</td>
+                <td>{{ veiculo.dataCadastro }}</td>
             </tr>
         </tbody>
     </table>

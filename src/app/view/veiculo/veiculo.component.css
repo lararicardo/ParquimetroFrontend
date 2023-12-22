@@ -13,3 +13,11 @@
 .button-group .btn {
     margin-left: 5px;
 }
+
+table > tbody > tr {
+    cursor: pointer;
+}
+
+.selecionado { 
+    background-color: cadetblue !important;
+}

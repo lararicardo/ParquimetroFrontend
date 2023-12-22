@@ -25,12 +25,16 @@ export class VeiculoService {
     return this.http.get<Veiculo[]>(this.apiUrl);
   }
 
+  getAllCores(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/cores`);
+  }
+
   getVeiculoPorPlaca(placa: string): Observable<Veiculo>{
     return this.http.get<any>(`${this.apiUrl}/${placa}`);
   }
 
-  deletar(veiculo: Veiculo): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${veiculo.placa}`);
+  deletar(placa: String): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${placa}`);
   } 
 
 }
