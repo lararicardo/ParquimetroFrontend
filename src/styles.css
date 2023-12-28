@@ -6,3 +6,35 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .icon-margin-right {
     margin-right: 10px;
 }
+
+.container {
+    margin-top: 50px;
+}
+
+.table {
+    margin-top: 50px;
+}
+
+#pesquisar {
+    margin-left: 5px;
+}
+
+.button-group .btn {
+    margin-left: 5px;
+}
+
+table > tbody > tr {
+    cursor: pointer;
+}
+
+.selecionado { 
+    background-color: cadetblue !important;
+}
+
+.button-group {
+    margin-top: 20px;
+}
+
+.table {
+    margin-top: 0;
+}

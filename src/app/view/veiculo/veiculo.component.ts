@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SharedComponents } from '../../shared';
 import { VeiculoService } from '../../service/veiculo/veiculo.service';
-import { Veiculo } from '../../model/veiculo';
+import { Veiculo } from '../../model/veiculo/veiculo';
 
 @Component({
   selector: 'app-veiculo',
