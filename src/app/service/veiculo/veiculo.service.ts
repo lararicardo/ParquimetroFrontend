@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environment/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Veiculo } from '../../model/veiculo';
 import { Observable } from 'rxjs';
 
@@ -14,7 +14,7 @@ export class VeiculoService {
   constructor(private http: HttpClient) {}
 
   update(veiculo: Veiculo): Observable<Veiculo> {
-    return this.http.put<Veiculo>(`${this.apiUrl}/${veiculo.placa}`, veiculo);
+    return this.http.put<Veiculo>(`${this.apiUrl}/${veiculo.id}`, veiculo);
   }
 
   add(veiculo: Veiculo): Observable<Veiculo> {
@@ -33,8 +33,8 @@ export class VeiculoService {
     return this.http.get<any>(`${this.apiUrl}/${placa}`);
   }
 
-  deletar(placa: String): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${placa}`);
+  deletar(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
   } 
 
 }

@@ -12,7 +12,6 @@ import { Veiculo } from '../../model/veiculo';
 })
 export class VeiculoComponent implements OnInit {
 
-  inputDisabled: boolean = true;
   exibeMensagem: boolean = false;
   textoMensagem: string = "";
 
@@ -58,13 +57,13 @@ export class VeiculoComponent implements OnInit {
 
   excluir() {
     this.service
-      .deletar(this.veiculoSelecionado.placa)
+      .deletar(this.veiculo.id)
       .subscribe({
         next: (response) => {
           this.exibeMensagem = true;
           this.textoMensagem = 'Veículo excluído com sucesso.';
+          this.listaDeVeiculos.splice(this.listaDeVeiculos.indexOf(this.veiculo), 1);
           this.veiculo = new Veiculo;
-          this.listaDeVeiculos.splice(this.listaDeVeiculos.indexOf(this.veiculoSelecionado), 1);
         },
         error: (responseError) => {
           this.exibeMensagem = false;
@@ -75,19 +74,51 @@ export class VeiculoComponent implements OnInit {
   }
 
   alterar() {
-
+    this.service
+      .update(this.veiculo)
+      .subscribe({
+        next: (response) => {
+          this.exibeMensagem = true;
+          this.textoMensagem = 'Veículo alterado com sucesso.';
+          this.veiculo = new Veiculo;
+          this.getAll();
+        },
+        error: (responseError) => {
+          this.exibeMensagem = true;
+          this.textoMensagem = JSON.stringify(responseError.error);
+          console.log('error: ' + JSON.stringify(responseError));
+        }
+      });
   }
 
-  novo() {
-    this.veiculo = new Veiculo;
-    this.veiculoSelecionado = new Veiculo;
-    this.inputDisabled = false;
+  pesquisar(placa: string) {
+
+    if(placa){
+      this.service
+      .getVeiculoPorPlaca(placa)
+      .subscribe({
+        next: (response) => {
+          this.listaDeVeiculos = []
+          this.listaDeVeiculos.push(response);
+        },
+        error: (responseError) => {
+          this.listaDeVeiculos = [];
+          console.log('error: ' + JSON.stringify(responseError));
+        }
+      });
+    }else{
+      this.getAll();
+    }
+    
   }
 
   salvar() {
     //console.log(JSON.stringify(this.veiculo));
 
-    this.service
+    if(this.veiculo.id){
+      this.alterar();
+    }else{
+      this.service
       .add(this.veiculo)
       .subscribe({
         next: (response) => {
@@ -102,11 +133,18 @@ export class VeiculoComponent implements OnInit {
           console.log('error: ' + JSON.stringify(responseError));
         }
       });
+    }
   }
 
-  selecionarVeiculo(veiculo: Veiculo) {
-    this.veiculoSelecionado = veiculo;
-    this.veiculo = veiculo;
+  selecionarVeiculo(id: number) {
+    this.veiculoSelecionado = {...this.listaDeVeiculos.find(v => v.id == id)!};
+    this.veiculo = this.veiculoSelecionado;
+  }
+
+
+  novo(){
+    this.veiculoSelecionado = new Veiculo;
+    this.veiculo = new Veiculo;
   }
 
 }

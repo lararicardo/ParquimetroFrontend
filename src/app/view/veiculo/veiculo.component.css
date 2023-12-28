@@ -21,3 +21,11 @@ table > tbody > tr {
 .selecionado { 
     background-color: cadetblue !important;
 }
+
+.button-group {
+    margin-top: 20px;
+}
+
+.table {
+    margin-top: 0;
+}
