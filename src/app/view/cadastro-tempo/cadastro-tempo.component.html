@@ -1,0 +1,77 @@
+<nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 h1"><i class="bi bi-car-front-fill icon-margin-right"></i>Parquímetro | Cadastro de Condutores</span>
+</nav>
+
+<div class="mt-5 ml-5 mr-5 mb-5">
+    <div class="alert alert-info" role="alert" *ngIf="exibeMensagem">
+        {{ textoMensagem }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form>
+        <div class="form-group">
+            <label for="condutor">Selecione o Condutor:</label>
+            <select class="form-control" id="condutor" name="condutor" required [(ngModel)]="condutorSelecionado">
+                <option *ngFor="let condutor of listaDeCondutores" [value]="condutor">{{ condutor.nomeCompleto }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="veiculo">Selecione o Veículo:</label>
+            <select class="form-control" id="veiculo" name="veiculo" required [(ngModel)]="veiculoSelecionado">
+                <option *ngFor="let veiculo of listaDeVeiculos" [value]="veiculo">{{ veiculo.placa }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="tempo">Selecione o Tempo</label>
+            <select class="form-control" id="tempo" name="tempo" required [(ngModel)]="tempo.tempoRegistrado">
+                <option *ngFor="let tempo of controleDeTempos" [value]="tempo">{{ tempo.name }}</option>
+            </select>
+        </div>
+        <div class="col-12 text-right button-group">
+            <button  type="button" class="mt-1 ml-1 mr-1 mb-1 btn btn-success" (click)="salvar()"><i class="bi bi-floppy2 icon-margin-right"></i> Iniciar </button>
+        </div>
+    </form>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Nome Completo</th>
+            <th scope="col">Email</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Celular</th>
+            <th scope="col">Cadastro Condutor</th>
+            <th scope="col">Placa</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">Cor</th>
+            <th scope="col">Ano Fabricacao</th>
+            <th scope="col">Ano Modelo</th>
+            <th scope="col">Cadastro Veiculo</th>
+            <th scope="col">Tempo Estacionamento</th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let condutor of listaDeCondutores">
+            <ng-container *ngFor="let veiculo of listaDeVeiculos">
+                <ng-container *ngFor="let tempo of listaDeTempos">
+                    <tr *ngIf="condutor.id === veiculo.id">
+                        <td>{{ condutor.nomeCompleto }}</td>
+                        <td>{{ condutor.email }}</td>
+                        <td>{{ condutor.cpf }}</td>
+                        <td>{{ condutor.celular }}</td>
+                        <td>{{ condutor.dataCadastro }}</td>
+                        <td>{{ veiculo.placa }}</td>
+                        <td>{{ veiculo.marca }}</td>
+                        <td>{{ veiculo.modelo }}</td>
+                        <td>{{ veiculo.cor }}</td>
+                        <td>{{ veiculo.anoFabricacao }}</td>
+                        <td>{{ veiculo.anoModelo }}</td>
+                        <td>{{ veiculo.dataCadastro }}</td>
+                        <td>{{ tempo.tempoRegistrado }}</td>
+                    </tr>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+        </tbody>
+    </table>
+</div>

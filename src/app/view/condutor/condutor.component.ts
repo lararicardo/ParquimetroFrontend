@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { SharedComponents } from '../../shared';
 import { Condutor } from '../../model/condutor/condutor';
 import { CondutorService } from '../../service/condutor/condutor.service';
+import { Veiculo } from '../../model/veiculo/veiculo';
+import { VeiculoService } from '../../service/veiculo/veiculo.service';
 
 @Component({
   selector: 'app-condutor',
@@ -18,14 +20,17 @@ export class CondutorComponent implements OnInit  {
   condutor: Condutor;
   condutorSelecionado: Condutor;
   listaDeCondutores: Condutor[] = [];
+  listaDeVeiculos: Veiculo[] = [];
 
-  constructor(private service: CondutorService) {
+  constructor(private service: CondutorService, private veiculoService: VeiculoService) {
     this.condutor = new Condutor;
     this.condutorSelecionado = new Condutor;
+    this.inicializarListaDeVeiculos();
   }
 
   ngOnInit(): void {
     this.getAll();
+    this.veiculoService.getAll();
   }
 
   getAll() {
@@ -111,10 +116,20 @@ export class CondutorComponent implements OnInit  {
     this.condutor = this.condutorSelecionado;
   }
 
-
   novo(){
     this.condutorSelecionado = new Condutor;
     this.condutor = new Condutor;
   }
 
+  inicializarListaDeVeiculos() {
+    // Use o serviço de veículos para buscar a lista de veículos
+    this.veiculoService.getAll().subscribe({
+      next: (veiculos) => {
+        this.listaDeVeiculos = veiculos;
+      },
+      error: (error) => {
+        console.error('Erro ao obter lista de veículos:', error);
+      }
+    });
+  }
 }

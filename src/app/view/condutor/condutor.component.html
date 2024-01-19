@@ -56,23 +56,39 @@
     <table class="table table-striped">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">ID</th>
                 <th scope="col">Nome Completo</th>
                 <th scope="col">Email</th>
                 <th scope="col">CPF</th>
                 <th scope="col">Celular</th>
-                <th scope="col">Data de Cadastro</th>
+                <th scope="col">Cadastro Condutor</th>
+                <th scope="col">Placa</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Cor</th>
+                <th scope="col">Ano Fabricacao</th>
+                <th scope="col">Ano Modelo</th>
+                <th scope="col">Cadastro Veiculo</th>
             </tr>
         </thead>
         <tbody>
-            <tr (click)="selecionarCondutor(condutor.id)" *ngFor="let condutor of listaDeCondutores" [className]="condutorSelecionado.id == condutor.id ? 'selecionado' : ''">
-                <td>{{ condutor.id }}</td>
-                <td>{{ condutor.nomeCompleto }}</td>
-                <td>{{ condutor.email }}</td>
-                <td>{{ condutor.cpf }}</td>
-                <td>{{ condutor.celular }}</td>
-                <td>{{ condutor.dataCadastro }}</td>
-            </tr>
+            <ng-container *ngFor="let condutor of listaDeCondutores">
+                <ng-container *ngFor="let veiculo of listaDeVeiculos">
+                    <tr (click)="selecionarCondutor(condutor.id)" [className]="condutorSelecionado.id == condutor.id ? 'selecionado' : ''" *ngIf="condutor.id === veiculo.id">
+                        <td>{{ condutor.nomeCompleto }}</td>
+                        <td>{{ condutor.email }}</td>
+                        <td>{{ condutor.cpf }}</td>
+                        <td>{{ condutor.celular }}</td>
+                        <td>{{ condutor.dataCadastro }}</td>
+                        <td>{{ veiculo.placa }}</td>
+                        <td>{{ veiculo.marca }}</td>
+                        <td>{{ veiculo.modelo }}</td>
+                        <td>{{ veiculo.cor }}</td>
+                        <td>{{ veiculo.anoFabricacao }}</td>
+                        <td>{{ veiculo.anoModelo }}</td>
+                        <td>{{ veiculo.dataCadastro }}</td>
+                    </tr>
+                </ng-container>
+            </ng-container>
         </tbody>
     </table>
 </div>
