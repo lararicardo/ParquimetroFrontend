@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { SharedComponents } from '../../shared';
 import { Condutor } from '../../model/condutor/condutor';
 import { CondutorService } from '../../service/condutor/condutor.service';
+import { Veiculo } from '../../model/veiculo/veiculo';
+import { VeiculoService } from '../../service/veiculo/veiculo.service';
 
 @Component({
   selector: 'app-condutor',
@@ -19,13 +21,18 @@ export class CondutorComponent implements OnInit  {
   condutorSelecionado: Condutor;
   listaDeCondutores: Condutor[] = [];
 
-  constructor(private service: CondutorService) {
+  veiculos!: Veiculo[];
+  veiculosSelecionados: number[] = [];
+
+
+  constructor(private service: CondutorService, private veiculoService: VeiculoService) {
     this.condutor = new Condutor;
     this.condutorSelecionado = new Condutor;
   }
 
   ngOnInit(): void {
     this.getAll();
+    this.getAllVeiculos();
   }
 
   getAll() {
@@ -34,6 +41,21 @@ export class CondutorComponent implements OnInit  {
       .subscribe({
         next: (response) => {
           this.listaDeCondutores = response;
+          console.log('next: ' + response);
+          console.log(JSON.stringify(this.listaDeCondutores));
+        },
+        error: (responseError) => {
+          console.log('error: ' + JSON.stringify(responseError));
+        }
+      });
+  }
+
+  getAllVeiculos() {
+    this.veiculoService
+      .getAll()
+      .subscribe({
+        next: (response) => {
+          this.veiculos = response;
           console.log('next: ' + response);
         },
         error: (responseError) => {
@@ -57,7 +79,6 @@ export class CondutorComponent implements OnInit  {
           console.log('error: ' + JSON.stringify(responseError));
         }
       });
-
   }
 
   alterar() {
@@ -78,7 +99,23 @@ export class CondutorComponent implements OnInit  {
       });
   }
 
-  pesquisar(nome: string) {
+  pesquisar(nomeCompleto: string) {
+
+    if(nomeCompleto){
+      this.service
+      .getCondutorByNomeCompleto(nomeCompleto)
+      .subscribe({
+        next: (response) => {
+          this.listaDeCondutores = response;
+        },
+        error: (responseError) => {
+          this.listaDeCondutores = [];
+          console.log('error: ' + JSON.stringify(responseError));
+        }
+      });
+    }else{
+      this.getAll();
+    }
     
   }
 
@@ -109,8 +146,17 @@ export class CondutorComponent implements OnInit  {
   selecionarCondutor(id: number) {
     this.condutorSelecionado = {...this.listaDeCondutores.find(v => v.id == id)!};
     this.condutor = this.condutorSelecionado;
+    
+    let listaAuxiliar: Veiculo[] = [];
+    this.veiculos.forEach(v1 => {
+      this.condutorSelecionado.veiculos.forEach(v2 => {
+        if(v1.id === v2.id){
+          listaAuxiliar.push(v1);
+        }
+      });
+    });
+    this.condutor.veiculos = listaAuxiliar;
   }
-
 
   novo(){
     this.condutorSelecionado = new Condutor;

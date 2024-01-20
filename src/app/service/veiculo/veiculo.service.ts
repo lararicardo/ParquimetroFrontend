@@ -29,7 +29,7 @@ export class VeiculoService {
     return this.http.get<string[]>(`${this.apiUrl}/cores`);
   }
 
-  getVeiculoPorPlaca(placa: string): Observable<Veiculo>{
+  getVeiculoPorPlaca(placa: string): Observable<Veiculo[]>{
     return this.http.get<any>(`${this.apiUrl}/${placa}`);
   }
 

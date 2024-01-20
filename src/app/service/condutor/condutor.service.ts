@@ -28,4 +28,8 @@ export class CondutorService {
   deletar(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   } 
+
+  getCondutorByNomeCompleto(nomeCompleto: string): Observable<Condutor[]>{
+    return this.http.get<any>(`${this.apiUrl}/${nomeCompleto}`);
+  }
 }
