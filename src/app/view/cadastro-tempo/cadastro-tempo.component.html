@@ -1,77 +1,117 @@
 <nav class="navbar navbar-light bg-light">
-    <span class="navbar-brand mb-0 h1"><i class="bi bi-car-front-fill icon-margin-right"></i>Parquímetro | Cadastro de Condutores</span>
+    <span class="navbar-brand mb-0 h1"><i class="bi bi-car-front-fill icon-margin-right"></i>Parquímetro | Cadastro de Hora</span>
 </nav>
 
 <div class="mt-5 ml-5 mr-5 mb-5">
-    <div class="alert alert-info" role="alert" *ngIf="exibeMensagem">
+    <!-- textoMensagem -->
+    <div class="alert alert-info " role="alert" *ngIf="exibeMensagem">
         {{ textoMensagem }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    <form>
-        <div class="form-group">
-            <label for="condutor">Selecione o Condutor:</label>
-            <select class="form-control" id="condutor" name="condutor" required [(ngModel)]="condutorSelecionado">
-                <option *ngFor="let condutor of listaDeCondutores" [value]="condutor">{{ condutor.nomeCompleto }}</option>
-            </select>
+
+    <!-- Modal -->
+    <div cclass="alert fade bd-example-modal-lg" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" *ngIf="exampleModal">
+        <div class="modal-dialog modal-lg mx-auto" role="document">
+            <ng-container *ngFor="let itemcondutores of listaDeCondutores">
+                <ng-container *ngFor="let itemveiculos of itemcondutores.veiculos">
+                    <form *ngFor="let itemtempo of listaDeTempos">
+                        <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo">
+                            <div class="modal-content">
+                                <div class="modal-header alert alert-warning">
+                                    <h5 class="modal-title" id="exampleModalLabel">Aviso de Tempo Expirado</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-warning" role="alert"><i class="bi bi-exclamation-triangle-fill mr-2"></i>
+                                        <p class="mb-0" *ngIf="itemtempo.tempoRegistrado === 'Automático';  else outroConteudo">
+                                            O Condutor: {{ itemcondutores.nomeCompleto }} do carro {{ itemveiculos.placa }}
+                                            teve seu tempo {{ itemtempo.dateTimeRegistrado }} Atualizado! </p>
+
+                                        <ng-template #outroConteudo>
+                                            O Condutor: {{ itemcondutores.nomeCompleto }} do carro {{ itemveiculos.placa }}
+                                            teve seu tempo {{ itemtempo.dateTimeRegistrado }} expirado deseja <button disabled type="button" class="btn btn-success">Iniciar</button> hora adicional
+                                            ou <button disabled type="button" class="btn btn-danger">Parar</button> o serviço
+                                        </ng-template>
+                                        <p  class="h6" >Informe ele através do Telefone: {{ itemcondutores.celular }},  E-mail: {{itemcondutores.email}} </p>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo">
+                                        <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático';">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </ng-container>
+                                        <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas';">
+                                            <button type="button" class="btn btn-success">Iniciar</button>
+                                            <button type="button" class="btn btn-danger">Parar</button>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </form>
+                    <div class="mt-2 ml-2 mr-2 mb-2" role="document"></div>
+                </ng-container>
+            </ng-container>
         </div>
-        <div class="form-group">
-            <label for="veiculo">Selecione o Veículo:</label>
-            <select class="form-control" id="veiculo" name="veiculo" required [(ngModel)]="veiculoSelecionado">
-                <option *ngFor="let veiculo of listaDeVeiculos" [value]="veiculo">{{ veiculo.placa }}</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="tempo">Selecione o Tempo</label>
-            <select class="form-control" id="tempo" name="tempo" required [(ngModel)]="tempo.tempoRegistrado">
-                <option *ngFor="let tempo of controleDeTempos" [value]="tempo">{{ tempo.name }}</option>
-            </select>
-        </div>
-        <div class="col-12 text-right button-group">
-            <button  type="button" class="mt-1 ml-1 mr-1 mb-1 btn btn-success" (click)="salvar()"><i class="bi bi-floppy2 icon-margin-right"></i> Iniciar </button>
-        </div>
-    </form>
-    <table class="table table-striped">
-        <thead class="thead-dark">
-        <tr>
-            <th scope="col">Nome Completo</th>
-            <th scope="col">Email</th>
-            <th scope="col">CPF</th>
-            <th scope="col">Celular</th>
-            <th scope="col">Cadastro Condutor</th>
-            <th scope="col">Placa</th>
-            <th scope="col">Marca</th>
-            <th scope="col">Modelo</th>
-            <th scope="col">Cor</th>
-            <th scope="col">Ano Fabricacao</th>
-            <th scope="col">Ano Modelo</th>
-            <th scope="col">Cadastro Veiculo</th>
-            <th scope="col">Tempo Estacionamento</th>
-        </tr>
-        </thead>
-        <tbody>
-        <ng-container *ngFor="let condutor of listaDeCondutores">
-            <ng-container *ngFor="let veiculo of listaDeVeiculos">
-                <ng-container *ngFor="let tempo of listaDeTempos">
-                    <tr *ngIf="condutor.id === veiculo.id">
-                        <td>{{ condutor.nomeCompleto }}</td>
-                        <td>{{ condutor.email }}</td>
-                        <td>{{ condutor.cpf }}</td>
-                        <td>{{ condutor.celular }}</td>
-                        <td>{{ condutor.dataCadastro }}</td>
-                        <td>{{ veiculo.placa }}</td>
-                        <td>{{ veiculo.marca }}</td>
-                        <td>{{ veiculo.modelo }}</td>
-                        <td>{{ veiculo.cor }}</td>
-                        <td>{{ veiculo.anoFabricacao }}</td>
-                        <td>{{ veiculo.anoModelo }}</td>
-                        <td>{{ veiculo.dataCadastro }}</td>
-                        <td>{{ tempo.tempoRegistrado }}</td>
+    </div>
+    <div>
+        <form>
+            <!-- Selecione o Condutor -->
+            <div class="form-group">
+                <label for="condutor">Selecione o Condutor:</label>
+                <select class="form-control" id="condutor" name="condutor" required [(ngModel)]="condutorSelecionado" (change)="carregarVeiculosPorCondutor()">
+                    <option *ngFor="let condutor of listaDeCondutores" [ngValue]="condutor">{{ condutor.nomeCompleto }}</option>
+                </select>
+            </div>
+            <!-- Selecione o Veículo -->
+            <div class="form-group">
+                <label for="veiculo">Selecione o Veículo:</label>
+                <select class="form-control" id="veiculo" name="veiculo" required [(ngModel)]="veiculoSelecionado">
+                    <option *ngFor="let veiculo of listaDeVeiculos" [ngValue]="veiculo">{{ veiculo.placa }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tempo">Selecione o Tempo</label>
+                <select class="form-control" id="tempo" name="tempo" required [(ngModel)]="tempoSelecionado">
+                    <option *ngFor="let controle of controleDeTempos" [ngValue]="controle">{{ controle.name }}</option>
+                </select>
+            </div>
+            <div class="col-12 text-right button-group">
+                <button  type="button" class="mt-1 ml-1 mr-1 mb-1 btn btn-success" (click)="salvar(condutorSelecionado, veiculoSelecionado, tempoSelecionado)"><i class="bi bi-floppy2 icon-margin-right"></i> Iniciar </button>
+            </div>
+        </form>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nome Completo</th>
+                <th scope="col">Email</th>
+                <th scope="col">CPF</th>
+                <th scope="col">Celular</th>
+                <th scope="col">Placa Carro</th>
+                <th scope="col">Tempo Estacionamento</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-container *ngFor="let itemcondutores of listaDeCondutores">
+                <ng-container *ngFor="let itemveiculos of itemcondutores.veiculos">
+                    <tr (click)="selecionarCondutor(itemcondutores.id)">
+                        <td>{{ itemcondutores.nomeCompleto }}</td>
+                        <td>{{ itemcondutores.email }}</td>
+                        <td>{{ itemcondutores.cpf }}</td>
+                        <td>{{ itemcondutores.celular }}</td>
+                        <td>{{ itemveiculos.placa }}</td>
+                        <td>
+                            <ng-container *ngFor="let itemtempo of listaDeTempos">
+                                <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo" >
+                                    {{ itemtempo.tempoRegistrado }}
+                                </ng-container>
+                            </ng-container>
+                        </td>
                     </tr>
                 </ng-container>
             </ng-container>
-        </ng-container>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>

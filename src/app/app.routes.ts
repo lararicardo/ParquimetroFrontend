@@ -11,7 +11,7 @@ export const routes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'veiculos', component: VeiculoComponent },
     { path: 'condutores', component: CondutorComponent },
-    { path: 'tempo', component: CadastroTempoComponent }
+    { path: 'tempos', component: CadastroTempoComponent }
 ];
 
 @NgModule({

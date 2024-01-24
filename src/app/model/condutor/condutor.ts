@@ -6,6 +6,6 @@ export class Condutor {
     email!: string;
     cpf!: string;
     celular!: string;
-    listaVeiculos!: Veiculo[];
+    veiculos!: Veiculo[];
     dataCadastro!: Date;
 }

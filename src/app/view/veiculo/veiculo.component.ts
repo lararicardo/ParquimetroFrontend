@@ -98,8 +98,7 @@ export class VeiculoComponent implements OnInit {
       .getVeiculoPorPlaca(placa)
       .subscribe({
         next: (response) => {
-          this.listaDeVeiculos = []
-          this.listaDeVeiculos.push(response);
+          this.listaDeVeiculos = response;
         },
         error: (responseError) => {
           this.listaDeVeiculos = [];

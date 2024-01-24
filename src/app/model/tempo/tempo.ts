@@ -1,10 +1,10 @@
-import { Condutor } from "../condutor/condutor";
-import { Veiculo } from "../veiculo/veiculo";
-import { ControleTempo } from "../tempo/controle.tempo";
-
 export class Tempo {
   id!: number;
-  listaDeCondutores!: Condutor[];
-  listaDeVeiculos!: Veiculo[];
+  condutor!: number;
+  veiculo!: number;
   tempoRegistrado!: String;
+  dateTimeRegistrado!: String;
+  dataHoraInserido!: String;
+  dataHoraFinalizado!: String;
+  atualizacoes!: number;
 }
