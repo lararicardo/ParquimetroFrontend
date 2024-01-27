@@ -26,11 +26,11 @@
                             <div class="modal-footer">
                                 <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo">
                                     <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes !== 5;">
-                                        <button type="button" class="btn btn-secondary" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)">Fechar</button>
+                                        <button type="button" class="btn btn-secondary" (click)="salvar(itemcondutores, itemveiculos, itemtempo)">Fechar</button>
                                     </ng-container>
                                     <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes === 5;">
-                                        <button type="button" class="btn btn-success" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"><i class="bi bi-floppy2 icon-margin-right"></i>Iniciar</button>
-                                        <button type="button" class="btn btn-danger" (click)="acabaTempo(itemtempo)"><i class="bi bi-trash icon-margin-right"></i>Parar</button>
+                                        <button type="button" class="btn btn-success" (click)="salvar(itemcondutores, itemveiculos, itemtempo)"><i class="bi bi-floppy2 icon-margin-right"></i>Iniciar</button>
+                                        <button type="button" class="btn btn-danger"><i class="bi bi-trash icon-margin-right"></i>Parar</button>
                                     </ng-container>
                                 </ng-container>
                             </div>

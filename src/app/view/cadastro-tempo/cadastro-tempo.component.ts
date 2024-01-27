@@ -37,13 +37,13 @@ export class CadastroTempoComponent implements OnInit {
   controleSelecionado!: ControleTempo;
   tempoSelecionado!: Tempo;
 
-  controleDeTempos!: ControleTempo[];
+  controleDeTempos: ControleTempo[] = [];
 
-  listaDeCondutores!: Condutor[];
-  listaDeVeiculos!: Veiculo[];
-  listaDeTempos!: Tempo[];
-  listaFinal!: Tempo[];
-  
+  listaDeCondutores: Condutor[] = [];
+  listaDeVeiculos: Veiculo[] = [];
+  listaDeTempos: Tempo[] = [];
+  listaFinal: Tempo[] = [];
+
   constructor(
     private service: TempoService,
     private condutorService: CondutorService,
@@ -58,8 +58,11 @@ export class CadastroTempoComponent implements OnInit {
     this.getAllCondutores();
     this.getAllVeiculos();
     this.getAllTempos();
-    this.getAll();
-    this.iniciarContadores();
+    this.getAll(); 
+    setTimeout(() => {
+      this.iniciarContadores();
+    }, 3000);
+    
   }
 
   openModal(): void {
@@ -88,7 +91,7 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  getAllCondutores() {
+  getAllCondutores(): void {
     this.condutorService.getAll().subscribe({
       next: (response) => {
         this.listaDeCondutores = response;
@@ -99,7 +102,7 @@ export class CadastroTempoComponent implements OnInit {
     });
   }
 
-  getAllVeiculos() {
+  getAllVeiculos(): void {
     this.veiculoService.getAll().subscribe({
       next: (response) => {
         this.listaDeVeiculos = response;
@@ -110,7 +113,7 @@ export class CadastroTempoComponent implements OnInit {
     });
   }
 
-  getAllTempos() {
+  getAllTempos(): void {
     this.service.getListaDeTempos().subscribe({
       next: (response) => {
         this.controleDeTempos = response;
@@ -121,10 +124,19 @@ export class CadastroTempoComponent implements OnInit {
     });
   }
 
-  getAll() {
+  getAll(): void {
+    console.log("Peguei a Lista");
+    const start = Date.now();
     this.service.getAll().subscribe({
-      next: (response) => {
+      next: async (response) => {
+        const end = Date.now();
+        console.log("Tempo de execução: " + (end - start) + "ms");
         this.listaDeTempos = response;
+        this.listaFinal = response;
+        console.log("response: " + JSON.stringify(response));
+        console.log(
+          "listaDeTempos = response: " + JSON.stringify(this.listaDeTempos)
+        );
       },
       error: (responseError) => {
         console.log("error: " + JSON.stringify(responseError));
@@ -132,7 +144,7 @@ export class CadastroTempoComponent implements OnInit {
     });
   }
 
-  selecionar(idC: number, idV: number) {
+  selecionar(idC: number, idV: number): void {
     this.condutorSelecionado = this.listaDeCondutores.find((v) => v.id == idC)!;
     this.veiculoSelecionado = this.listaDeVeiculos.find((v) => v.id == idV)!;
     this.tempoSelecionado = this.listaDeTempos.find(
@@ -140,7 +152,7 @@ export class CadastroTempoComponent implements OnInit {
     )!;
   }
 
-  verificaCondutor() {
+  verificaCondutor(): void {
     if (this.condutorSelecionado) {
       if (this.condutorSelecionado.veiculos) {
         this.listaDeVeiculos = this.condutorSelecionado.veiculos;
@@ -158,7 +170,7 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  verificaVeiculo() {
+  verificaVeiculo(): void {
     if (this.condutorSelecionado) {
       if (this.veiculoSelecionado) {
         this.tempoSelecionado = this.listaDeTempos.find(
@@ -181,7 +193,7 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  salvar(condutor: Condutor, veiculo: Veiculo, controleTempo: ControleTempo) {
+  salvar(condutor: Condutor, veiculo: Veiculo, controleTempo: ControleTempo): void {
     this.closeModal();
     if (!condutor || !veiculo || !controleTempo) {
       this.exibeMensagem2 = true;
@@ -221,7 +233,9 @@ export class CadastroTempoComponent implements OnInit {
             this.tempo = new Tempo();
             this.listaDeTempos.push(response);
             this.getAll();
-            this.iniciarContadores();
+            setTimeout(() => {
+              this.iniciarContadores();
+            }, 3000);
           },
           error: (responseError) => {
             this.exibeMensagem = true;
@@ -233,7 +247,7 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  alterarTempo(tempo: Tempo, controleTempo: ControleTempo) {
+  alterarTempo(tempo: Tempo, controleTempo: ControleTempo): void {
     if (tempo.atualizacoes !== 5) {
       tempo.tempoRegistrado = controleTempo.name;
       tempo.dateTimeRegistrado = controleTempo.value;
@@ -255,7 +269,9 @@ export class CadastroTempoComponent implements OnInit {
           this.tempo = new Tempo();
           this.listaDeTempos.push(response);
           this.getAll();
-          this.iniciarContadores();
+          setTimeout(() => {
+            this.iniciarContadores();
+          }, 3000);
         },
         error: (responseError) => {
           this.exibeMensagem = true;
@@ -269,7 +285,7 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  acabaTempo(tempo: Tempo) {
+  acabaTempo(tempo: Tempo): void {
     this.closeModal();
     if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
       this.exibeMensagem = true;
@@ -342,60 +358,13 @@ export class CadastroTempoComponent implements OnInit {
     return false;
   }
 
-  /* iniciarContadores() {
-
-    this.getAll();
-    
-    if (this.listaDeTempos && this.listaDeTempos.length > 0) {
-      this.listaDeTempos.filter((item) => item !== null).forEach((item) => {
-      let dataAtual = luxon.DateTime.local();
-      console.log("horas0::::::::::::" + dataAtual);
-      let dataHoraSemUnidades = item.dataHoraInserido.replace(/[hms]/g, "");
-      console.log("horas1::::::::::::" + dataHoraSemUnidades);
-      let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
-      console.log("horas::::::::::::" + dataHoraRegistrado);
-        if (dataHoraRegistrado.isValid) {
-          let intervalo = setInterval(() => {
-            let diferencaSegundos = dataAtual.diff(
-              dataHoraRegistrado,
-              "seconds"
-            ).seconds;
-            if (diferencaSegundos >= 1) {
-              clearInterval(intervalo);
-              this.openModal();
-            }
-          }, 1000);
-        } else {
-          console.error(
-            "A data e hora registradas não são válidas:",
-            dataHoraRegistrado
-          );
-        }
-      });
-
-    }
-      
-  }*/
-
-  iniciarContadores() {
-
-    this.service.getAll().subscribe({
-      next: (response) => {
-        this.listaFinal = response;
-      },
-      error: (responseError) => {
-        console.log("error: " + JSON.stringify(responseError));
-      },
-    });
-
+  iniciarContadores(): void {
+  
     if (this.listaFinal && this.listaFinal.length > 0) {
       const temposComDiferenca = this.listaFinal.map((tempo) => {
         let dataAtual = luxon.DateTime.local();
         let dataHoraSemUnidades = tempo.dataHoraInserido.replace(/[hms]/g, "");
-        let dataHoraRegistrado = luxon.DateTime.fromFormat(
-          dataHoraSemUnidades,
-          "dd/mm/yyyy hh:mm:ss"
-        );
+        let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
         let diferenca = dataAtual.diff(dataHoraRegistrado, "seconds").seconds;
         return {
           tempo: tempo,
