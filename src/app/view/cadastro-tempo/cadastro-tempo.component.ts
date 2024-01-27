@@ -3,7 +3,7 @@ import { SharedComponents } from '../../shared';
 import { DatePipe } from '@angular/common';
 
 import { Tempo } from '../../model/tempo/tempo';
-import { ControleTempo } from '../../model/tempo/controle.tempo';
+import { ControleTempo } from '../../model/controle.tempo/controle.tempo';
 import { TempoService } from '../../service/tempo/tempo.service';
 
 import { Condutor } from '../../model/condutor/condutor';
@@ -37,12 +37,13 @@ export class CadastroTempoComponent implements OnInit {
   controleSelecionado!: ControleTempo;
   tempoSelecionado!: Tempo;
 
-  controleDeTempos: ControleTempo[] = [];
+  controleDeTempos!: ControleTempo[];
 
-  listaDeCondutores: Condutor[] = [];
-  listaDeVeiculos: Veiculo[] = [];
-  listaDeTempos: Tempo[] = [];
-
+  listaDeCondutores!: Condutor[];
+  listaDeVeiculos!: Veiculo[];
+  listaDeTempos!: Tempo[];
+  listaFinal!: Tempo[];
+  
   constructor(
     private service: TempoService,
     private condutorService: CondutorService,
@@ -58,6 +59,7 @@ export class CadastroTempoComponent implements OnInit {
     this.getAllVeiculos();
     this.getAllTempos();
     this.getAll();
+    this.iniciarContadores();
   }
 
   openModal(): void {
@@ -101,7 +103,6 @@ export class CadastroTempoComponent implements OnInit {
     this.veiculoService.getAll().subscribe({
       next: (response) => {
         this.listaDeVeiculos = response;
-        console.log("next: " + response);
       },
       error: (responseError) => {
         console.log("error: " + JSON.stringify(responseError));
@@ -124,7 +125,6 @@ export class CadastroTempoComponent implements OnInit {
     this.service.getAll().subscribe({
       next: (response) => {
         this.listaDeTempos = response;
-        console.log(JSON.stringify(this.listaDeTempos));
       },
       error: (responseError) => {
         console.log("error: " + JSON.stringify(responseError));
@@ -159,19 +159,30 @@ export class CadastroTempoComponent implements OnInit {
   }
 
   verificaVeiculo() {
-    if (this.condutorSelecionado){
+    if (this.condutorSelecionado) {
       if (this.veiculoSelecionado) {
-        this.tempoSelecionado = this.listaDeTempos.find((v) => v.condutor == this.condutorSelecionado.id && v.veiculo == this.veiculoSelecionado.id)!;
+        this.tempoSelecionado = this.listaDeTempos.find(
+          (v) =>
+            v.condutor == this.condutorSelecionado.id &&
+            v.veiculo == this.veiculoSelecionado.id
+        )!;
       } else {
         console.log("A lista de veículos do condutor não está carregada.");
       }
-    }else{
-      this.condutorSelecionado = this.listaDeCondutores.find((v) => v.veiculos.some((v2) => v2.id == this.veiculoSelecionado.id))!;
-      this.tempoSelecionado = this.listaDeTempos.find((v) => v.condutor == this.condutorSelecionado.id && v.veiculo == this.veiculoSelecionado.id)!;
+    } else {
+      this.condutorSelecionado = this.listaDeCondutores.find((v) =>
+        v.veiculos.some((v2) => v2.id == this.veiculoSelecionado.id)
+      )!;
+      this.tempoSelecionado = this.listaDeTempos.find(
+        (v) =>
+          v.condutor == this.condutorSelecionado.id &&
+          v.veiculo == this.veiculoSelecionado.id
+      )!;
     }
   }
 
   salvar(condutor: Condutor, veiculo: Veiculo, controleTempo: ControleTempo) {
+    this.closeModal();
     if (!condutor || !veiculo || !controleTempo) {
       this.exibeMensagem2 = true;
       if (!condutor) {
@@ -196,7 +207,9 @@ export class CadastroTempoComponent implements OnInit {
       console.log("TEMPO COMPLETO:" + JSON.stringify(tempoSalvar));
 
       this.exibeMensagem2 = false;
-      const tempoExistente = this.listaDeTempos.find((t) => t.condutor === condutor.id && t.veiculo === veiculo.id);
+      const tempoExistente = this.listaDeTempos.find(
+        (t) => t.condutor === condutor.id && t.veiculo === veiculo.id
+      );
 
       if (tempoExistente) {
         this.alterarTempo(tempoExistente, controleTempo);
@@ -208,6 +221,7 @@ export class CadastroTempoComponent implements OnInit {
             this.tempo = new Tempo();
             this.listaDeTempos.push(response);
             this.getAll();
+            this.iniciarContadores();
           },
           error: (responseError) => {
             this.exibeMensagem = true;
@@ -219,25 +233,16 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  atualizarAuto(condutor: Condutor, veiculo: Veiculo, tempo: Tempo): void {
-    this.closeModal();
-    const controleTempo: ControleTempo = {
-      name: tempo.tempoRegistrado,
-      value: tempo.dateTimeRegistrado,
-      valuetwo: tempo.dataHoraInserido,
-      valuethree: tempo.dataHoraFinalizado,
-      atualiza: tempo.atualizacoes,
-    };
-    this.salvar(condutor, veiculo, controleTempo);
-  }
-
   alterarTempo(tempo: Tempo, controleTempo: ControleTempo) {
     if (tempo.atualizacoes !== 5) {
       tempo.tempoRegistrado = controleTempo.name;
       tempo.dateTimeRegistrado = controleTempo.value;
       tempo.dataHoraInserido = this.fromStringTwo(controleTempo.name);
       tempo.atualizacoes = tempo.atualizacoes + 1;
-      tempo.dataHoraFinalizado = this.fromStringThree(controleTempo.name, tempo.atualizacoes);
+      tempo.dataHoraFinalizado = this.fromStringThree(
+        controleTempo.name,
+        tempo.atualizacoes
+      );
 
       if (!tempo) {
         this.exibeMensagem = true;
@@ -248,7 +253,9 @@ export class CadastroTempoComponent implements OnInit {
           this.exibeMensagem = true;
           this.textoMensagem = "Tempo alterado com sucesso.";
           this.tempo = new Tempo();
+          this.listaDeTempos.push(response);
           this.getAll();
+          this.iniciarContadores();
         },
         error: (responseError) => {
           this.exibeMensagem = true;
@@ -269,7 +276,7 @@ export class CadastroTempoComponent implements OnInit {
       this.textoMensagem = "ID do tempo não definido ou inválido.";
       return;
     }
-    
+
     this.service.delete(tempo.id).subscribe({
       next: (response) => {
         this.exibeMensagem = true;
@@ -327,37 +334,80 @@ export class CadastroTempoComponent implements OnInit {
   verificarTempo(condutorId: number, veiculoId: number): boolean {
     console.log(condutorId, veiculoId);
     if (this.listaDeTempos && this.listaDeTempos.length > 0) {
-      return this.listaDeTempos.some((itemtempo) => itemtempo.condutor === condutorId && itemtempo.veiculo === veiculoId);
+      return this.listaDeTempos.some(
+        (itemtempo) =>
+          itemtempo.condutor === condutorId && itemtempo.veiculo === veiculoId
+      );
     }
     return false;
   }
 
-  iniciarContadores() {
-    this.listaDeTempos.forEach((item) => {
-      let dataAtual = luxon.DateTime.local();
-      let dataHoraSemUnidades = item.dataHoraInserido.replace(/[hms]/g, "");
-      let dataHoraRegistrado = luxon.DateTime.fromFormat(
-        dataHoraSemUnidades,
-        "dd/mm/yyyy hh:mm:ss"
-      );
+  /* iniciarContadores() {
 
-      if (dataHoraRegistrado.isValid) {
-        let intervalo = setInterval(() => {
-          let diferencaSegundos = dataAtual.diff(
-            dataHoraRegistrado,
-            "seconds"
-          ).seconds;
-          if (diferencaSegundos >= 3600) {
-            clearInterval(intervalo);
-            this.openModal();
-          }
-        }, 1000);
-      } else {
-        console.error(
-          "A data e hora registradas não são válidas:",
-          dataHoraRegistrado
-        );
-      }
+    this.getAll();
+    
+    if (this.listaDeTempos && this.listaDeTempos.length > 0) {
+      this.listaDeTempos.filter((item) => item !== null).forEach((item) => {
+      let dataAtual = luxon.DateTime.local();
+      console.log("horas0::::::::::::" + dataAtual);
+      let dataHoraSemUnidades = item.dataHoraInserido.replace(/[hms]/g, "");
+      console.log("horas1::::::::::::" + dataHoraSemUnidades);
+      let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
+      console.log("horas::::::::::::" + dataHoraRegistrado);
+        if (dataHoraRegistrado.isValid) {
+          let intervalo = setInterval(() => {
+            let diferencaSegundos = dataAtual.diff(
+              dataHoraRegistrado,
+              "seconds"
+            ).seconds;
+            if (diferencaSegundos >= 1) {
+              clearInterval(intervalo);
+              this.openModal();
+            }
+          }, 1000);
+        } else {
+          console.error(
+            "A data e hora registradas não são válidas:",
+            dataHoraRegistrado
+          );
+        }
+      });
+
+    }
+      
+  }*/
+
+  iniciarContadores() {
+
+    this.service.getAll().subscribe({
+      next: (response) => {
+        this.listaFinal = response;
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },
     });
+
+    if (this.listaFinal && this.listaFinal.length > 0) {
+      const temposComDiferenca = this.listaFinal.map((tempo) => {
+        let dataAtual = luxon.DateTime.local();
+        let dataHoraSemUnidades = tempo.dataHoraInserido.replace(/[hms]/g, "");
+        let dataHoraRegistrado = luxon.DateTime.fromFormat(
+          dataHoraSemUnidades,
+          "dd/mm/yyyy hh:mm:ss"
+        );
+        let diferenca = dataAtual.diff(dataHoraRegistrado, "seconds").seconds;
+        return {
+          tempo: tempo,
+          diferenca: diferenca,
+        };
+      });
+
+      temposComDiferenca.forEach((tempo) => {
+        if (tempo.diferenca >= 1) {
+          this.openModal();
+        }
+      });
+    }
   }
 }

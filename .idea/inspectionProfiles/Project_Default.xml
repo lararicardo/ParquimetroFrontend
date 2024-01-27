@@ -4,7 +4,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="8">
+          <list size="10">
             <item index="0" class="java.lang.String" itemvalue="routerLink" />
             <item index="1" class="java.lang.String" itemvalue="[(ngModel)]" />
             <item index="2" class="java.lang.String" itemvalue="[className]" />
@@ -13,6 +13,24 @@
             <item index="5" class="java.lang.String" itemvalue="*ngIf" />
             <item index="6" class="java.lang.String" itemvalue="#placaPesquisa" />
             <item index="7" class="java.lang.String" itemvalue="(click)" />
+            <item index="8" class="java.lang.String" itemvalue="(change)" />
+            <item index="9" class="java.lang.String" itemvalue="ngModel" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="7">
+            <item index="0" class="java.lang.String" itemvalue="nobr" />
+            <item index="1" class="java.lang.String" itemvalue="noembed" />
+            <item index="2" class="java.lang.String" itemvalue="comment" />
+            <item index="3" class="java.lang.String" itemvalue="noscript" />
+            <item index="4" class="java.lang.String" itemvalue="embed" />
+            <item index="5" class="java.lang.String" itemvalue="script" />
+            <item index="6" class="java.lang.String" itemvalue="ng-container" />
           </list>
         </value>
       </option>

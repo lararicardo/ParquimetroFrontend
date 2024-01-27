@@ -26,10 +26,10 @@
                             <div class="modal-footer">
                                 <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo">
                                     <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes !== 5;">
-                                        <button type="button" class="btn btn-secondary" (click)="atualizarAuto(itemcondutores, itemveiculos, itemtempo)">Fechar</button>
+                                        <button type="button" class="btn btn-secondary" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)">Fechar</button>
                                     </ng-container>
                                     <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes === 5;">
-                                        <button type="button" class="btn btn-success" (click)="atualizarAuto(itemcondutores, itemveiculos, itemtempo)"><i class="bi bi-floppy2 icon-margin-right"></i>Iniciar</button>
+                                        <button type="button" class="btn btn-success" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"><i class="bi bi-floppy2 icon-margin-right"></i>Iniciar</button>
                                         <button type="button" class="btn btn-danger" (click)="acabaTempo(itemtempo)"><i class="bi bi-trash icon-margin-right"></i>Parar</button>
                                     </ng-container>
                                 </ng-container>
@@ -48,7 +48,7 @@
         <span class="navbar-brand mb-0 h1"><i class="bi bi-car-front-fill icon-margin-right"></i>Parquímetro | Cadastro de Hora</span>
     </nav>
     <div class="mt-3 mb-3 col-12 text-right">
-        <button type="button" class="btn btn-secondary text-right" routerLink="/veiculos"><i class="bi bi-arrow-counterclockwise icon-margin-right"></i>Voltar</button>
+        <button type="button" class="btn btn-secondary text-right" routerLink="/home"><i class="bi bi-arrow-counterclockwise icon-margin-right"></i>Voltar</button>
     </div>
     <div class="container-fluid">
         <!-- Sucess -->
@@ -101,7 +101,7 @@
     </form>
     <div class="mt-2 mb-2 col-12 text-right button-group">
         <ng-container *ngIf="this.tempoSelecionado == undefined || this.tempoSelecionado.tempoRegistrado == undefined">
-            <button type="button" class="btn btn-success text-right" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"> <i class=" mr-2 bi bi-floppy2 icon-margin-right"></i> Voltar </button>
+            <button type="button" class="btn btn-success text-right" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"> <i class=" mr-2 bi bi-floppy2 icon-margin-right"></i> Salvar </button>
         </ng-container>
         <ng-container *ngIf="this.tempoSelecionado && this.tempoSelecionado.tempoRegistrado">
             <button type="button" class="btn btn-danger text-right" > <i class="mr-3 bi bi-trash icon-margin-right" ></i>Parar</button>

@@ -1,4 +1,4 @@
-import { ControleTempo } from './tempo';
+import { ControleTempo } from './controle.tempo';
 
 describe('ControleTempo', () => {
   it('should create an instance', () => {

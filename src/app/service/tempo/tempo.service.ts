@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { Tempo } from '../../model/tempo/tempo';
-import { ControleTempo } from '../../model/tempo/controle.tempo';
+import { ControleTempo } from '../../model/controle.tempo/controle.tempo';
 import { Observable } from 'rxjs';
 
 @Injectable({
