@@ -26,6 +26,10 @@ export class TempoService {
     return this.http.put<Tempo>(`${this.apiUrl}/${Tempo.id}`, Tempo);
   }
 
+  delete(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
   add(Tempo: Tempo): Observable<Tempo> {
     return this.http.post<Tempo>(this.apiUrl, Tempo);
   }

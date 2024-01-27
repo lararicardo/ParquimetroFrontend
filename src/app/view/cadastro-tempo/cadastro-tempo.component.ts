@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit}  from '@angular/core';
 import { SharedComponents } from '../../shared';
 import { DatePipe } from '@angular/common';
 
@@ -12,176 +12,199 @@ import { CondutorService } from '../../service/condutor/condutor.service';
 import { Veiculo } from '../../model/veiculo/veiculo';
 import { VeiculoService } from '../../service/veiculo/veiculo.service';
 
-import moment from 'moment';
+import * as luxon from 'luxon';
 
 @Component({
-selector: 'app-cadastro-tempo',
-standalone: true,
-imports: [SharedComponents],
-templateUrl: './cadastro-tempo.component.html',
-styleUrl: './cadastro-tempo.component.css',
+  selector: "app-cadastro-tempo",
+  standalone: true,
+  imports: [SharedComponents],
+  templateUrl: "./cadastro-tempo.component.html",
+  styleUrl: "./cadastro-tempo.component.css",
 })
+export class CadastroTempoComponent implements OnInit {
+  exibeMensagem: boolean = false;
+  exibeMensagem2: boolean = false;
+  exampleModal: boolean = false;
+  textoMensagem: string = "";
+  datePipe!: DatePipe;
+  condutor!: Condutor;
+  veiculo!: Veiculo;
+  tempo!: Tempo;
+  controleTempo!: ControleTempo;
 
-export class CadastroTempoComponent implements OnInit  {
+  condutorSelecionado!: Condutor;
+  veiculoSelecionado!: Veiculo;
+  controleSelecionado!: ControleTempo;
+  tempoSelecionado!: Tempo;
 
-exibeMensagem: boolean = false;
-exampleModal: boolean = false;
-textoMensagem: string = "";
-datePipe!: DatePipe;
-condutor!: Condutor;
-veiculo!: Veiculo;
-tempo!: Tempo;
-controleTempo!: ControleTempo;
+  controleDeTempos: ControleTempo[] = [];
 
-condutorSelecionado!: Condutor;
-veiculoSelecionado!: Veiculo;
-tempoSelecionado!: ControleTempo;
+  listaDeCondutores: Condutor[] = [];
+  listaDeVeiculos: Veiculo[] = [];
+  listaDeTempos: Tempo[] = [];
 
-controleDeTempos: ControleTempo[] = [];
-
-listaDeCondutores: Condutor[] = [];
-listaDeVeiculos: Veiculo[] = [];
-listaDeTempos: Tempo[] = [];
-
-  constructor(private service: TempoService, private condutorService: CondutorService, private veiculoService: VeiculoService) {
-    this.tempo = new Tempo;
-    this.tempoSelecionado = new ControleTempo;
+  constructor(
+    private service: TempoService,
+    private condutorService: CondutorService,
+    private veiculoService: VeiculoService
+  ) {
+    this.tempo = new Tempo();
+    this.controleSelecionado;
+    this.tempoSelecionado = new Tempo();
   }
 
   ngOnInit(): void {
     this.getAllCondutores();
+    this.getAllVeiculos();
     this.getAllTempos();
     this.getAll();
   }
 
+  openModal(): void {
+    const modalElement: HTMLElement | null = document.getElementById("myModal");
+    const bodyElement: HTMLElement | null =
+      document.getElementById("efeito_modal");
+    if (modalElement && bodyElement) {
+      modalElement.className = "modal fade show";
+      modalElement.style.display = "block";
+      bodyElement.className = "modal-backdrop fade show";
+    } else {
+      console.error('Modal element with ID "myModal" not found.');
+    }
+  }
+
+  closeModal(): void {
+    const modalElement: HTMLElement | null = document.getElementById("myModal");
+    const bodyElement: HTMLElement | null =
+      document.getElementById("efeito_modal");
+    if (modalElement && bodyElement) {
+      modalElement.className = "modal fade";
+      modalElement.style.display = "none";
+      bodyElement.className = "";
+    } else {
+      console.error('Modal element with ID "myModal" not found.');
+    }
+  }
+
   getAllCondutores() {
-    this.condutorService
-      .getAll()
-      .subscribe({
-        next: (response) => {
-          this.listaDeCondutores = response;
-        },
-        error: (responseError) => {
-          console.log('error: ' + JSON.stringify(responseError));
-        }
-      });
+    this.condutorService.getAll().subscribe({
+      next: (response) => {
+        this.listaDeCondutores = response;
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
+  }
+
+  getAllVeiculos() {
+    this.veiculoService.getAll().subscribe({
+      next: (response) => {
+        this.listaDeVeiculos = response;
+        console.log("next: " + response);
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
   }
 
   getAllTempos() {
-    this.service
-      .getListaDeTempos()
-      .subscribe({
-        next: (response) => {
-          this.controleDeTempos = response;
-          console.log('controleDeTempos' + JSON.stringify(response));
-        },
-        error: (responseError) => {
-          console.log('error: ' + JSON.stringify(responseError));
-        }
-      });
+    this.service.getListaDeTempos().subscribe({
+      next: (response) => {
+        this.controleDeTempos = response;
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
   }
+
   getAll() {
-    this.service
-      .getAll()
-      .subscribe({
-        next: (response) => {
-          this.listaDeTempos = response;
-          if (this.listaDeTempos && this.listaDeTempos.length > 0) {
-            this.iniciarContadores();
-          }
-          console.log('response lista de tempos cadastrados: ' + JSON.stringify(this.listaDeTempos));
-        },
-        error: (responseError) => {
-          console.log('error: ' + JSON.stringify(responseError));
-        }
-      });
+    this.service.getAll().subscribe({
+      next: (response) => {
+        this.listaDeTempos = response;
+        console.log(JSON.stringify(this.listaDeTempos));
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
   }
 
-  selecionarCondutor(id: number) {
-    this.condutorSelecionado = this.listaDeCondutores.find(v => v.id == id)!;
+  selecionar(idC: number, idV: number) {
+    this.condutorSelecionado = this.listaDeCondutores.find((v) => v.id == idC)!;
+    this.veiculoSelecionado = this.listaDeVeiculos.find((v) => v.id == idV)!;
+    this.tempoSelecionado = this.listaDeTempos.find(
+      (v) => v.condutor == idC && v.veiculo == idV
+    )!;
+  }
 
+  verificaCondutor() {
     if (this.condutorSelecionado) {
-      if (this.condutorSelecionado.veiculos && this.condutorSelecionado.veiculos.length > 0) {
+      if (this.condutorSelecionado.veiculos) {
         this.listaDeVeiculos = this.condutorSelecionado.veiculos;
         this.veiculoSelecionado = this.listaDeVeiculos[0];
+        this.tempoSelecionado = this.listaDeTempos.find(
+          (v) =>
+            v.condutor == this.condutorSelecionado.id &&
+            v.veiculo == this.listaDeVeiculos[0].id
+        )!;
       } else {
-        this.veiculoSelecionado = new Veiculo();
+        console.log("A lista de veículos do condutor não está carregada.");
       }
     } else {
-      this.condutorSelecionado = new Condutor();
-      this.veiculoSelecionado = new Veiculo();
+      console.log("Nenhum condutor selecionado.");
     }
   }
 
-  carregarVeiculosPorCondutor() {
-    if (this.condutorSelecionado) {
-        if (this.condutorSelecionado.veiculos) {
-            this.listaDeVeiculos = this.condutorSelecionado.veiculos;
-            this.veiculoSelecionado = this.listaDeVeiculos[0];
-        } else {
-            console.log('A lista de veículos do condutor não está carregada.');
-        }
-    } else {
-        console.log('Nenhum condutor selecionado.');
+  verificaVeiculo() {
+    if (this.condutorSelecionado){
+      if (this.veiculoSelecionado) {
+        this.tempoSelecionado = this.listaDeTempos.find((v) => v.condutor == this.condutorSelecionado.id && v.veiculo == this.veiculoSelecionado.id)!;
+      } else {
+        console.log("A lista de veículos do condutor não está carregada.");
+      }
+    }else{
+      this.condutorSelecionado = this.listaDeCondutores.find((v) => v.veiculos.some((v2) => v2.id == this.veiculoSelecionado.id))!;
+      this.tempoSelecionado = this.listaDeTempos.find((v) => v.condutor == this.condutorSelecionado.id && v.veiculo == this.veiculoSelecionado.id)!;
     }
-  }
-
-  alterarTempo(tempo: Tempo, controleTempo: ControleTempo) {
-
-    tempo.tempoRegistrado = controleTempo.name;
-    tempo.dateTimeRegistrado = controleTempo.value;
-    tempo.dataHoraInserido = this.fromStringTwo(controleTempo.name);
-    tempo.dataHoraFinalizado = this.fromStringThree(controleTempo.name, controleTempo.atualiza);
-
-    if (controleTempo.atualiza !== 4 && controleTempo.name === "Automático") {
-      tempo.atualizacoes = tempo.atualizacoes + 1;
-    }
-
-    this.service
-      .update(tempo)
-      .subscribe({
-        next: (response) => {
-          this.exibeMensagem = true;
-          this.textoMensagem = 'Tempo alterado com sucesso.';
-          this.tempo = new Tempo();
-          this.getAll();
-        },
-        error: (responseError) => {
-          this.exibeMensagem = true;
-          this.textoMensagem = JSON.stringify(responseError.error);
-          console.log('error: ' + JSON.stringify(responseError));
-        }
-      });
   }
 
   salvar(condutor: Condutor, veiculo: Veiculo, controleTempo: ControleTempo) {
-
-    console.log('Entrou no Salvar');
-    console.log('hora: ' + this.fromStringTwo(controleTempo.name));
-
-    const tempoSalvar: Tempo = {
-      id: this.tempo.id,
-      condutor: condutor.id,
-      veiculo: veiculo.id,
-      tempoRegistrado: controleTempo.name,
-      dateTimeRegistrado: controleTempo.value,
-      dataHoraInserido: this.fromStringTwo(controleTempo.name),
-      dataHoraFinalizado: this.fromStringThree(controleTempo.name, 1),
-      atualizacoes: controleTempo.atualiza = 1
-    };
-
-    const tempoExistente = this.listaDeTempos.find(t => t.condutor === condutor.id && t.veiculo === veiculo.id);
-
-    if (tempoExistente) {
-      this.alterarTempo(tempoExistente, controleTempo);
+    if (!condutor || !veiculo || !controleTempo) {
+      this.exibeMensagem2 = true;
+      if (!condutor) {
+        this.textoMensagem = "Condutor não informado";
+      } else if (!veiculo) {
+        this.textoMensagem = "Veiculo não informado";
+      } else if (!controleTempo) {
+        this.textoMensagem = "Tempo não informado";
+      }
     } else {
-      console.log("ENTROU EM SALVAR: tempo -->" + JSON.stringify(tempoSalvar));
-      this.service
-        .add(tempoSalvar)
-        .subscribe({
+      const tempoSalvar: Tempo = {
+        id: this.tempo.id,
+        condutor: condutor.id,
+        veiculo: veiculo.id,
+        tempoRegistrado: controleTempo.name,
+        dateTimeRegistrado: controleTempo.value,
+        dataHoraInserido: this.fromStringTwo(controleTempo.name),
+        dataHoraFinalizado: this.fromStringThree(controleTempo.name, 1),
+        atualizacoes: (controleTempo.atualiza = 1),
+      };
+
+      console.log("TEMPO COMPLETO:" + JSON.stringify(tempoSalvar));
+
+      this.exibeMensagem2 = false;
+      const tempoExistente = this.listaDeTempos.find((t) => t.condutor === condutor.id && t.veiculo === veiculo.id);
+
+      if (tempoExistente) {
+        this.alterarTempo(tempoExistente, controleTempo);
+      } else {
+        this.service.add(tempoSalvar).subscribe({
           next: (response) => {
             this.exibeMensagem = true;
-            this.textoMensagem = 'Tempo cadastrado com sucesso.';
+            this.textoMensagem = "Tempo cadastrado com sucesso.";
             this.tempo = new Tempo();
             this.listaDeTempos.push(response);
             this.getAll();
@@ -189,68 +212,152 @@ listaDeTempos: Tempo[] = [];
           error: (responseError) => {
             this.exibeMensagem = true;
             this.textoMensagem = JSON.stringify(responseError.error);
-            console.log('error: ' + JSON.stringify(responseError));
-          }
+            console.log("error: " + JSON.stringify(responseError));
+          },
         });
+      }
     }
   }
 
-  fromStringTwo(name: String): String {
-    const dataAtual: Date = new Date();
-    const dataAtualFormatada: String = this.formatarData(dataAtual);
+  atualizarAuto(condutor: Condutor, veiculo: Veiculo, tempo: Tempo): void {
+    this.closeModal();
+    const controleTempo: ControleTempo = {
+      name: tempo.tempoRegistrado,
+      value: tempo.dateTimeRegistrado,
+      valuetwo: tempo.dataHoraInserido,
+      valuethree: tempo.dataHoraFinalizado,
+      atualiza: tempo.atualizacoes,
+    };
+    this.salvar(condutor, veiculo, controleTempo);
+  }
+
+  alterarTempo(tempo: Tempo, controleTempo: ControleTempo) {
+    if (tempo.atualizacoes !== 5) {
+      tempo.tempoRegistrado = controleTempo.name;
+      tempo.dateTimeRegistrado = controleTempo.value;
+      tempo.dataHoraInserido = this.fromStringTwo(controleTempo.name);
+      tempo.atualizacoes = tempo.atualizacoes + 1;
+      tempo.dataHoraFinalizado = this.fromStringThree(controleTempo.name, tempo.atualizacoes);
+
+      if (!tempo) {
+        this.exibeMensagem = true;
+        this.textoMensagem = "Problema ao alterar o tempo, tente novamente.";
+      }
+      this.service.update(tempo).subscribe({
+        next: (response) => {
+          this.exibeMensagem = true;
+          this.textoMensagem = "Tempo alterado com sucesso.";
+          this.tempo = new Tempo();
+          this.getAll();
+        },
+        error: (responseError) => {
+          this.exibeMensagem = true;
+          this.textoMensagem = JSON.stringify(responseError.error);
+          console.log("error: " + JSON.stringify(responseError));
+        },
+      });
+    } else {
+      this.exibeMensagem = true;
+      this.textoMensagem = "Não pode mais adicionar tempo.";
+    }
+  }
+
+  acabaTempo(tempo: Tempo) {
+    this.closeModal();
+    if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
+      this.exibeMensagem = true;
+      this.textoMensagem = "ID do tempo não definido ou inválido.";
+      return;
+    }
+    
+    this.service.delete(tempo.id).subscribe({
+      next: (response) => {
+        this.exibeMensagem = true;
+        //this.textoMensagem = "Tempo Deletado com sucesso.";
+        //this.tempo = new Tempo();
+        this.listaDeTempos.push(response);
+        this.getAll();
+      },
+      error: (responseError) => {
+        this.exibeMensagem = true;
+        this.textoMensagem = JSON.stringify(responseError.error);
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
+  }
+
+  fromStringTwo(name: string): string {
+    const dataAtual = luxon.DateTime.local();
+    const dataAtualFormatada = this.formatarData(dataAtual.toJSDate());
     return dataAtualFormatada;
   }
 
-  fromStringThree(name: String, t: number): String {
+  fromStringThree(name: string, t: number): string {
+    let horasAdicionar: number;
+    let dataAtual = luxon.DateTime.local();
+    let dataFutura = luxon.DateTime.local();
 
-      let horasAdicionar: number;
-      const dataAtual: Date = new Date();
-      const dataFutura: Date = new Date();
+    if ((name === "Automático" && t === 1) || name === "01:00 Horas") {
+      horasAdicionar = 1;
+    } else if ((name === "Automático" && t === 2) || name === "02:00 Horas") {
+      horasAdicionar = 2;
+    } else if ((name === "Automático" && t === 3) || name === "03:00 Horas") {
+      horasAdicionar = 3;
+    } else if ((name === "Automático" && t === 4) || name === "04:00 Horas") {
+      horasAdicionar = 4;
+    } else {
+      horasAdicionar = 0;
+    }
 
-      if (name === "Automático" || name === "01:00 Horas") {
-        horasAdicionar = 1;
-      } else if (name === "Automático" && t === 2 || name === "02:00 Horas") {
-        horasAdicionar = 2;
-      } else if (name === "Automático" && t === 3 || name === "03:00 Horas") {
-        horasAdicionar = 3;
-      } else if (name === "Automático" && t === 4 || name === "04:00 Horas") {
-        horasAdicionar = 4;
-      } else  {
-        horasAdicionar = 0;
-      }
-
-      dataFutura.setHours(dataAtual.getHours() + horasAdicionar);
-      const dataFuturaFormatada: String = this.formatarData(dataFutura);
-      return dataFuturaFormatada;
+    dataFutura = dataAtual.plus({ hours: horasAdicionar });
+    const dataFuturaFormatada = this.formatarData(dataFutura.toJSDate());
+    return dataFuturaFormatada;
   }
 
-  formatarData(data: Date): String {
-      const dia = ('0' + data.getDate()).slice(-2);
-      const mes = ('0' + (data.getMonth() + 1)).slice(-2);
-      const ano = data.getFullYear();
-      const hora = ('0' + data.getHours()).slice(-2);
-      const minuto = ('0' + data.getMinutes()).slice(-2);
-      const segundo = ('0' + data.getSeconds()).slice(-2);
-      return `${dia}/${mes}/${ano} ${hora}h:${minuto}m:${segundo}s`;
+  formatarData(data: Date): string {
+    const dia = ("0" + data.getDate()).slice(-2);
+    const mes = ("0" + (data.getMonth() + 1)).slice(-2);
+    const ano = data.getFullYear();
+    const hora = ("0" + data.getHours()).slice(-2);
+    const minuto = ("0" + data.getMinutes()).slice(-2);
+    const segundo = ("0" + data.getSeconds()).slice(-2);
+    return `${dia}/${mes}/${ano} ${hora}h:${minuto}m:${segundo}s`;
+  }
+
+  verificarTempo(condutorId: number, veiculoId: number): boolean {
+    console.log(condutorId, veiculoId);
+    if (this.listaDeTempos && this.listaDeTempos.length > 0) {
+      return this.listaDeTempos.some((itemtempo) => itemtempo.condutor === condutorId && itemtempo.veiculo === veiculoId);
+    }
+    return false;
   }
 
   iniciarContadores() {
-  this.listaDeTempos.forEach(item => {
-    const dataHoraRegistrado = moment(item.dataHoraInserido as moment.MomentInput, 'DD/MM/YYYY HH[h]:mm[m]:ss[s]');
+    this.listaDeTempos.forEach((item) => {
+      let dataAtual = luxon.DateTime.local();
+      let dataHoraSemUnidades = item.dataHoraInserido.replace(/[hms]/g, "");
+      let dataHoraRegistrado = luxon.DateTime.fromFormat(
+        dataHoraSemUnidades,
+        "dd/mm/yyyy hh:mm:ss"
+      );
 
-    if (dataHoraRegistrado.isValid()) {
-      const intervalo = setInterval(() => {
-        const diferencaSegundos = moment().diff(dataHoraRegistrado, 'seconds');
-
-        if (diferencaSegundos >= 1) {
-          clearInterval(intervalo);
-          this.exampleModal = true;
-        }
-      }, 1000);
-    } else {
-      console.error('A data e hora registradas não são válidas:', item.dataHoraInserido);
-    }
-  });
-}
-
+      if (dataHoraRegistrado.isValid) {
+        let intervalo = setInterval(() => {
+          let diferencaSegundos = dataAtual.diff(
+            dataHoraRegistrado,
+            "seconds"
+          ).seconds;
+          if (diferencaSegundos >= 3600) {
+            clearInterval(intervalo);
+            this.openModal();
+          }
+        }, 1000);
+      } else {
+        console.error(
+          "A data e hora registradas não são válidas:",
+          dataHoraRegistrado
+        );
+      }
+    });
+  }
 }

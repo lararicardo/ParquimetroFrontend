@@ -1,7 +1,7 @@
 export class ControleTempo {
-    name!: String;
-    value!: String;
-    valuetwo!: String;
-    valuethree!: String;
+    name!: string;
+    value!: string;
+    valuetwo!: string;
+    valuethree!: string;
     atualiza!: number;
 }
