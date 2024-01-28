@@ -2,9 +2,9 @@ export class Tempo {
   id!: number;
   condutor!: number;
   veiculo!: number;
-  tempoRegistrado!: String;
-  dateTimeRegistrado!: String;
-  dataHoraInserido!: String;
-  dataHoraFinalizado!: String;
+  tempoRegistrado!: string;
+  dateTimeRegistrado!: string;
+  dataHoraInserido!: string;
+  dataHoraFinalizado!: string;
   atualizacoes!: number;
 }

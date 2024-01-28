@@ -58,17 +58,15 @@ export class CadastroTempoComponent implements OnInit {
     this.getAllCondutores();
     this.getAllVeiculos();
     this.getAllTempos();
-    this.getAll(); 
+    this.getAll();
     setTimeout(() => {
       this.iniciarContadores();
     }, 3000);
-    
   }
 
   openModal(): void {
     const modalElement: HTMLElement | null = document.getElementById("myModal");
-    const bodyElement: HTMLElement | null =
-      document.getElementById("efeito_modal");
+    const bodyElement: HTMLElement | null = document.getElementById("efeito_modal");
     if (modalElement && bodyElement) {
       modalElement.className = "modal fade show";
       modalElement.style.display = "block";
@@ -80,8 +78,7 @@ export class CadastroTempoComponent implements OnInit {
 
   closeModal(): void {
     const modalElement: HTMLElement | null = document.getElementById("myModal");
-    const bodyElement: HTMLElement | null =
-      document.getElementById("efeito_modal");
+    const bodyElement: HTMLElement | null = document.getElementById("efeito_modal");
     if (modalElement && bodyElement) {
       modalElement.className = "modal fade";
       modalElement.style.display = "none";
@@ -193,8 +190,25 @@ export class CadastroTempoComponent implements OnInit {
     }
   }
 
-  salvar(condutor: Condutor, veiculo: Veiculo, controleTempo: ControleTempo): void {
+  AtualizarCondutor(condutor: Condutor, veiculo: Veiculo, tempo: Tempo) {
     this.closeModal();
+
+    const controleTempo: ControleTempo = {
+      name: tempo.tempoRegistrado,
+      value: tempo.dateTimeRegistrado,
+      valuetwo: tempo.dataHoraInserido,
+      valuethree: tempo.dataHoraFinalizado,
+      atualiza: tempo.atualizacoes,
+    };
+
+    this.salvar(condutor, veiculo, controleTempo);
+  }
+
+  salvar(
+    condutor: Condutor,
+    veiculo: Veiculo,
+    controleTempo: ControleTempo
+  ): void {
     if (!condutor || !veiculo || !controleTempo) {
       this.exibeMensagem2 = true;
       if (!condutor) {
@@ -205,14 +219,17 @@ export class CadastroTempoComponent implements OnInit {
         this.textoMensagem = "Tempo não informado";
       }
     } else {
+
+      controleTempo = this.fromStringThree(controleTempo, 1)
+
       const tempoSalvar: Tempo = {
         id: this.tempo.id,
         condutor: condutor.id,
         veiculo: veiculo.id,
         tempoRegistrado: controleTempo.name,
         dateTimeRegistrado: controleTempo.value,
-        dataHoraInserido: this.fromStringTwo(controleTempo.name),
-        dataHoraFinalizado: this.fromStringThree(controleTempo.name, 1),
+        dataHoraInserido: this.fromStringTwo(),
+        dataHoraFinalizado: controleTempo.valuethree,
         atualizacoes: (controleTempo.atualiza = 1),
       };
 
@@ -248,58 +265,30 @@ export class CadastroTempoComponent implements OnInit {
   }
 
   alterarTempo(tempo: Tempo, controleTempo: ControleTempo): void {
-    if (tempo.atualizacoes !== 5) {
-      tempo.tempoRegistrado = controleTempo.name;
-      tempo.dateTimeRegistrado = controleTempo.value;
-      tempo.dataHoraInserido = this.fromStringTwo(controleTempo.name);
-      tempo.atualizacoes = tempo.atualizacoes + 1;
-      tempo.dataHoraFinalizado = this.fromStringThree(
-        controleTempo.name,
-        tempo.atualizacoes
-      );
+    
+    tempo.atualizacoes = tempo.atualizacoes + 1;
+    controleTempo = this.fromStringThree(controleTempo, tempo.atualizacoes);
 
-      if (!tempo) {
-        this.exibeMensagem = true;
-        this.textoMensagem = "Problema ao alterar o tempo, tente novamente.";
-      }
-      this.service.update(tempo).subscribe({
-        next: (response) => {
-          this.exibeMensagem = true;
-          this.textoMensagem = "Tempo alterado com sucesso.";
-          this.tempo = new Tempo();
-          this.listaDeTempos.push(response);
-          this.getAll();
-          setTimeout(() => {
-            this.iniciarContadores();
-          }, 3000);
-        },
-        error: (responseError) => {
-          this.exibeMensagem = true;
-          this.textoMensagem = JSON.stringify(responseError.error);
-          console.log("error: " + JSON.stringify(responseError));
-        },
-      });
-    } else {
+    tempo.tempoRegistrado = controleTempo.name;
+    tempo.dateTimeRegistrado = controleTempo.value;
+    tempo.dataHoraInserido = controleTempo.valuetwo;
+    tempo.dataHoraFinalizado = controleTempo.valuethree;
+    
+
+    if (!tempo) {
       this.exibeMensagem = true;
-      this.textoMensagem = "Não pode mais adicionar tempo.";
+      this.textoMensagem = "Problema ao alterar o tempo, tente novamente.";
     }
-  }
-
-  acabaTempo(tempo: Tempo): void {
-    this.closeModal();
-    if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
-      this.exibeMensagem = true;
-      this.textoMensagem = "ID do tempo não definido ou inválido.";
-      return;
-    }
-
-    this.service.delete(tempo.id).subscribe({
+    this.service.update(tempo).subscribe({
       next: (response) => {
         this.exibeMensagem = true;
-        //this.textoMensagem = "Tempo Deletado com sucesso.";
-        //this.tempo = new Tempo();
+        this.textoMensagem = "Tempo alterado com sucesso.";
+        this.tempo = new Tempo();
         this.listaDeTempos.push(response);
         this.getAll();
+        setTimeout(() => {
+          this.iniciarContadores();
+        }, 3000);
       },
       error: (responseError) => {
         this.exibeMensagem = true;
@@ -309,32 +298,90 @@ export class CadastroTempoComponent implements OnInit {
     });
   }
 
-  fromStringTwo(name: string): string {
+  Jeff(tempo: Tempo): void {
+    this.closeModal();
+    console.log('Tempo: '+ JSON.stringify(tempo))
+    if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
+      this.exibeMensagem = true;
+      this.textoMensagem = "ID do tempo não definido ou inválido.";
+      return;
+    }
+
+    this.service.delete(tempo.id).subscribe({
+      next: (response) => {
+        this.exibeMensagem = true;
+        this.textoMensagem = "Tempo Deletado com sucesso.";
+        this.tempo = new Tempo();
+        this.listaDeTempos.push(response);
+        this.getAll();
+        location.reload();
+      },
+      error: (responseError) => {
+        this.exibeMensagem = true;
+        this.textoMensagem = JSON.stringify(responseError.error);
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
+  }
+
+  fromStringTwo(): string {
     const dataAtual = luxon.DateTime.local();
     const dataAtualFormatada = this.formatarData(dataAtual.toJSDate());
     return dataAtualFormatada;
   }
 
-  fromStringThree(name: string, t: number): string {
+  fromStringThree(controleTempo: ControleTempo, t: number): ControleTempo {
+    
     let horasAdicionar: number;
     let dataAtual = luxon.DateTime.local();
     let dataFutura = luxon.DateTime.local();
 
-    if ((name === "Automático" && t === 1) || name === "01:00 Horas") {
-      horasAdicionar = 1;
-    } else if ((name === "Automático" && t === 2) || name === "02:00 Horas") {
-      horasAdicionar = 2;
-    } else if ((name === "Automático" && t === 3) || name === "03:00 Horas") {
-      horasAdicionar = 3;
-    } else if ((name === "Automático" && t === 4) || name === "04:00 Horas") {
-      horasAdicionar = 4;
-    } else {
-      horasAdicionar = 0;
+    if (!controleTempo.valuetwo && t > 1){
+      horasAdicionar = t + 1;
+      console.log("Possui Atribuição")
+      switch (controleTempo.name) {
+          case "01:00 Hora":
+            controleTempo.name = "02:00 Horas";
+            break;
+          case "02:00 Horas":
+            controleTempo.name = "03:00 Horas";
+            break;
+          case "03:00 Horas":
+            controleTempo.name = "04:00 Horas";
+            break;
+          case "04:00 Horas":
+            controleTempo.name = "Automático";
+            break;
+          default:
+            controleTempo.name = "Automático";
+        }
+      dataFutura = dataAtual.plus({ hours: horasAdicionar });
+      controleTempo.valuethree = this.formatarData(dataFutura.toJSDate());
+    }else{
+
+      console.log("Primeira Atribuição");
+
+      switch (controleTempo.name) {
+        case "01:00 Hora":
+          horasAdicionar = 1
+          break;
+        case "02:00 Horas":
+          horasAdicionar = 2
+          break;
+        case "03:00 Horas":
+          horasAdicionar = 3
+          break;
+        case "04:00 Horas":
+          horasAdicionar = 4
+          break;
+        default:
+          horasAdicionar = 1
+      } 
+      dataFutura = dataAtual.plus({ hours: horasAdicionar });
+      controleTempo.valuethree = this.formatarData(dataFutura.toJSDate());
     }
 
-    dataFutura = dataAtual.plus({ hours: horasAdicionar });
-    const dataFuturaFormatada = this.formatarData(dataFutura.toJSDate());
-    return dataFuturaFormatada;
+  return controleTempo;  
   }
 
   formatarData(data: Date): string {
@@ -359,13 +406,13 @@ export class CadastroTempoComponent implements OnInit {
   }
 
   iniciarContadores(): void {
-  
     if (this.listaFinal && this.listaFinal.length > 0) {
       const temposComDiferenca = this.listaFinal.map((tempo) => {
         let dataAtual = luxon.DateTime.local();
         let dataHoraSemUnidades = tempo.dataHoraInserido.replace(/[hms]/g, "");
         let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
         let diferenca = dataAtual.diff(dataHoraRegistrado, "seconds").seconds;
+
         return {
           tempo: tempo,
           diferenca: diferenca,
@@ -373,9 +420,9 @@ export class CadastroTempoComponent implements OnInit {
       });
 
       temposComDiferenca.forEach((tempo) => {
-        if (tempo.diferenca >= 1) {
-          this.openModal();
-        }
+          if (tempo.diferenca >= 3600) {
+            this.openModal();
+          }
       });
     }
   }
