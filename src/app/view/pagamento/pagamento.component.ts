@@ -5,6 +5,12 @@ import { Tempo } from '../../model/tempo/tempo';
 import { TempoService } from '../../service/tempo/tempo.service';
 import { ControleTempo } from '../../model/controle.tempo/controle.tempo';
 import { PagamentoService } from '../../service/pagamento/pagamento.service';
+import { CondutorService } from '../../service/condutor/condutor.service';
+import { Condutor } from '../../model/condutor/condutor';
+import { VeiculoService } from '../../service/veiculo/veiculo.service';
+import { Veiculo } from '../../model/veiculo/veiculo';
+import { ActivatedRoute, Router } from '@angular/router';
+import * as luxon from 'luxon';
 
 @Component({
   selector: 'app-pagamento',
@@ -18,29 +24,58 @@ export class PagamentoComponent implements OnInit {
   exibeMensagem: boolean = false;
   textoMensagem: string = "";
 
-  pagamento!: Pagamento;
-  listaDePagamentos: Pagamento[] = [];
+  pagamento: Pagamento = new Pagamento();
+  condutor!: Condutor;
+  veiculo!: Veiculo;
   tempo!: Tempo;
-  controleDeTempos: Tempo[] = [];
 
-  formadePagamento: string[] = [];
+  formasPagamento: string[] = [];
 
-  tempoSelecionado!: Tempo;
-  listaDeTempos!: Tempo[];
-  listaFinal!: Tempo[];
+  listaDePagamentos: Pagamento[] = [];
+  
+  controleSelecionado!: ControleTempo;
+
+
+  idTempo: Number = 0;
+
+  valorPagoFormatado!: string;
 
   constructor(
     private service: PagamentoService,
-    private tempoService: TempoService
-  ) {
-    this.pagamento = new Pagamento();
-  }
+    private tempoService: TempoService,
+    private condutorService: CondutorService,
+    private veiculoService: VeiculoService,
+    private route: ActivatedRoute
+
+  ) {}
+
+  
+  ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+    this.idTempo = params['id'];
+    console.log('Valor do parâmetro "id" da URL:', this.idTempo); });
+    this.getAllTempos();
+}
 
   getAllTempos() {
-    this.tempoService.getAll().subscribe({
+     this.tempoService.getAll().subscribe({
       next: (response) => {
-        this.controleDeTempos = response;
-        console.log("responseTempo: " + JSON.stringify(response));
+        this.tempo = response.find((t) => t.id == this.idTempo)!;
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },complete: () => {
+          this.getAllCondutores();
+          this.getAllVeiculos();
+          this.calcularTempoUtilizado();
+          this.getAllFormasPagamento();
+      }
+    });
+  }
+  getAllCondutores() {
+    this.condutorService.getAll().subscribe({
+      next: (response) => {
+        this.condutor = response.find((c) => c.id == this.tempo.condutor)!;
       },
       error: (responseError) => {
         console.log("error: " + JSON.stringify(responseError));
@@ -48,52 +83,51 @@ export class PagamentoComponent implements OnInit {
     });
   }
 
-  getAllFormaDePagamento() {
+  getAllVeiculos() {
+    this.veiculoService.getAll().subscribe({
+      next: (response) => {
+        this.veiculo = response.find((v) => v.id == this.tempo.veiculo)!;
+      },
+      error: (responseError) => {
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
+  }
+
+  calcularTempoUtilizado() {
+    const { dataHoraInserido, dataHoraFinalizado } = this.tempo;
+    this.pagamento.tempoUtilizado = luxon.DateTime.fromFormat(dataHoraFinalizado.replace(/[hms]/g, ""), "dd/mm/yyyy hh:mm:ss").hour - 
+      luxon.DateTime.fromFormat(dataHoraInserido.replace(/[hms]/g, ""), "dd/mm/yyyy hh:mm:ss").hour;
+
+    this.pagamento.valorPago = this.pagamento.tempoUtilizado * 15.0;
+    this.valorPagoFormatado = this.pagamento.valorPago.toLocaleString("pt-BR", { style: "currency" , currency:"BRL"});
+  }
+
+  getAllFormasPagamento() {
     this.service
     .getAllFormaDePagamento()
     .subscribe({
       next: (response) => {
-        this.formadePagamento = response;
+        this.formasPagamento = response;
       },
       error: (responseError) => {
         console.log('error: ' + JSON.stringify(responseError));
+      }, complete: () => {
+        if(this.tempo.tempoRegistrado == "Automático") {
+          this.formasPagamento.shift();
+        }
       }
     });
   }
 
-  ngOnInit(): void {
-      this.getAllTempos();
-      this.getAllFormaDePagamento();
-  }
-
-   realizacaoPagamento(tempoIni: Tempo, tempoFim: Tempo) {
-    
-    var inicio = tempoIni.dataHoraInserido
-    var inicioInt = Number(inicio)
-    var fim = tempoFim.dataHoraFinalizado
-    var fimInt = Number(fim)
-
-    var pagamentoFinal = (fimInt - inicioInt) * 15;
-
-    return pagamentoFinal;
-   }
-
-  salvar( tempo: Tempo) {
-
-   // constpagamentoSalvar: Pagamento = {
-   //   id: this.pagamento.id,
-   //   tempo: this.tempo.id,
-   //   pagamento: this.realizacaoPagamento(tempo.dataHoraInserido, tempo.dataHoraFinalizado),
-   // };
-
+  salvar() {
+    console.log(this.pagamento);
     this.service
     .add(this.pagamento)
     .subscribe({
       next: (response) => {
         this.exibeMensagem = true;
         this.textoMensagem = 'Pagamento realizado com sucesso.';
-        this.pagamento = new Pagamento;
-        this.listaDePagamentos.push(response);
       },
       error: (responseError) => {
         this.exibeMensagem = true;

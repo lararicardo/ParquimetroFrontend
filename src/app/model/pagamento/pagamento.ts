@@ -1,6 +1,6 @@
 export class Pagamento {
     id!: number;
     formaPagamento!: String;
-    dataHoraInserido!: String;
-    dataHoraFinalizado!: String;
+    tempoUtilizado!: number;
+    valorPago!: number;
 }

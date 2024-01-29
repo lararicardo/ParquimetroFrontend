@@ -130,7 +130,7 @@ export class CondutorComponent implements OnInit  {
       .subscribe({
         next: (response) => {
           this.exibeMensagem = true;
-          this.textoMensagem = 'Veículo cadastrado com sucesso.';
+          this.textoMensagem = 'Condutor cadastrado com sucesso.';
           this.condutor = new Condutor;
           this.listaDeCondutores.push(response);
         },

@@ -13,7 +13,8 @@ export const routes: Routes = [
     { path: 'veiculos', component: VeiculoComponent },
     { path: 'condutores', component: CondutorComponent },
     { path: 'tempos', component: CadastroTempoComponent },
-    { path: 'pagamento', component: PagamentoComponent },
+    { path: 'pagamentos', component: PagamentoComponent },
+    { path: 'pagamentos/:id', component: PagamentoComponent }
 ];
 
 @NgModule({

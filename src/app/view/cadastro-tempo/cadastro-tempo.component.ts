@@ -13,6 +13,7 @@ import { Veiculo } from '../../model/veiculo/veiculo';
 import { VeiculoService } from '../../service/veiculo/veiculo.service';
 
 import * as luxon from 'luxon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: "app-cadastro-tempo",
@@ -47,12 +48,18 @@ export class CadastroTempoComponent implements OnInit {
   constructor(
     private service: TempoService,
     private condutorService: CondutorService,
-    private veiculoService: VeiculoService
+    private veiculoService: VeiculoService,
+    private router: Router
+
   ) {
     this.tempo = new Tempo();
     this.controleSelecionado;
     this.tempoSelecionado = new Tempo();
   }
+
+envioIdTempo(): void {
+  this.router.navigateByUrl('/pagamentos/'+this.tempo.id);
+}
 
   ngOnInit(): void {
     this.getAllCondutores();
@@ -392,10 +399,8 @@ export class CadastroTempoComponent implements OnInit {
       const temposComDiferenca = this.listaFinal.map((tempo) => {
         let dataAtual = luxon.DateTime.local();
         let dataHoraSemUnidades = tempo.dataHoraInserido.replace(/[hms]/g, "");
-        let dataHoraRegistrado = luxon.DateTime.fromFormat(
-          dataHoraSemUnidades,
-          "dd/mm/yyyy hh:mm:ss"
-        );
+        let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
+        
         let diferenca = dataAtual.diff(dataHoraRegistrado, "seconds").seconds;
         return {
           tempo: tempo,

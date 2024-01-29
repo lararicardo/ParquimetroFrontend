@@ -31,6 +31,7 @@
                                     <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes === 5;">
                                         <button type="button" class="btn btn-success" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"><i class="bi bi-floppy2 icon-margin-right"></i>Iniciar</button>
                                         <button type="button" class="btn btn-danger" (click)="acabaTempo(itemtempo)"><i class="bi bi-trash icon-margin-right"></i>Parar</button>
+                                        <button type="button" class="btn btn-danger" [routerLink]="['/pagamentos', itemtempo.id]"><i class="bi bi-trash icon-margin-right"></i>Redirecionar</button>
                                     </ng-container>
                                 </ng-container>
                             </div>

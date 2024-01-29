@@ -9,7 +9,7 @@ import { Pagamento } from '../../model/pagamento/pagamento';
 })
 export class PagamentoService {
 
-  apiUrl: string = environment.apiUrlBase + 'api/pagamentos';
+  apiUrl: string = environment.apiUrlBase + '/api/pagamentos';
 
   constructor(private http: HttpClient) {}
 

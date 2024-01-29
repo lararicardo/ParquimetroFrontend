@@ -1,3 +1,57 @@
 <nav class="navbar navbar-light bg-light">
     <span class="navbar-brand mb-0 h1"><i class="bi bi-car-front-fill icon-margin-right"></i>Parquímetro | Realização de Pagamento</span>
 </nav>
+
+<div class="container">
+    <div class="alert alert-info" role="alert" *ngIf="exibeMensagem">
+        {{ textoMensagem }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <form class="container-fluid">
+        <!-- Selecione o Condutor -->
+        <div class="form-group">
+            <label for="condutor">Selecione o Condutor:</label>
+            <input disabled type="text" class="form-control" id="condutor" name="condutor" [(ngModel)]="condutor.nomeCompleto">
+
+        </div>
+        <!-- Selecione o Veículo -->
+        <div class="form-group">
+            <label for="veiculo">Selecione o Veículo:</label>
+            <input disabled type="text" class="form-control" id="veiculo" name="veiculo" [(ngModel)]="veiculo.placa">
+
+        </div>
+            <!-- Tempo -->
+            <div class="form-group">
+                <label for="tempo">Tempo Selecionado </label>
+                <input disabled type="text" class="form-control" id="tempo" name="tempo" [(ngModel)]="tempo.tempoRegistrado">
+            </div>
+        
+            <!-- Tempo Utilizado -->
+            <div class="form-group">
+                <label for="tempoFinalizado">Tempo Utilizado</label>
+                <input disabled type="text" class="form-control" id="tempoFinalizado" name="tempoFinalizado" [(ngModel)]="pagamento.tempoUtilizado">
+            </div>
+
+            <!-- Valor a ser pago -->
+            <div class="form-group">
+                <label for="valorPago">Valor a ser Pago</label>
+                <input disabled type="text" class="form-control" id="valorPago" name="valorPago" [(ngModel)]="valorPagoFormatado">
+            </div>
+
+            <!-- Selecione a Forma de Pagamento -->
+            <div class="form-group">
+                <label for="formasPagamento">Selecione a Forma de Pagamento:</label>
+                <select class="custom-select invalid-feedback" id="formasPagamento" name="formasPagamento" required [(ngModel)]="pagamento.formaPagamento" [class.is-invalid]="!pagamento.formaPagamento">
+                    <option *ngFor="let formaPagamento of formasPagamento" [ngValue]="formaPagamento">{{ formaPagamento }}</option>
+                </select>
+                <div class="invalid-feedback">Este campo é obrigatório.</div>
+            </div>
+
+            <div class="col-12 text-right button-group">
+                <button type="button" class="btn btn-success" (click)="salvar()"><i class="bi bi-floppy2 icon-margin-right"></i>Efetuar Pagamento</button>
+            </div>
+
+    </form>
+</div>
