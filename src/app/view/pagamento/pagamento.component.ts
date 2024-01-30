@@ -45,7 +45,8 @@ export class PagamentoComponent implements OnInit {
     private tempoService: TempoService,
     private condutorService: CondutorService,
     private veiculoService: VeiculoService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
 
   ) {}
 
@@ -120,13 +121,16 @@ export class PagamentoComponent implements OnInit {
     });
   }
 
-  salvar() {
+  salvar() {   
+    this.pagamento.tempoId = this.tempo.id;
+
     this.service
     .add(this.pagamento)
     .subscribe({
       next: (response) => {
         this.exibeMensagem = true;
         this.textoMensagem = 'Pagamento realizado com sucesso.';
+        this.router.navigate(['/recibos', response.id]);
       },
       error: (responseError) => {
         this.exibeMensagem = true;
@@ -135,5 +139,4 @@ export class PagamentoComponent implements OnInit {
       }
     });
   }
-
 }

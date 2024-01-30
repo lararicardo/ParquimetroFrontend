@@ -31,7 +31,7 @@
             <!-- Tempo Utilizado -->
             <div class="form-group">
                 <label for="tempoFinalizado">Tempo Utilizado</label>
-                <input disabled type="text" class="form-control" id="tempoFinalizado" name="tempoFinalizado" [(ngModel)]="pagamento.tempoUtilizado">
+                <input disabled type="text" class="form-control" id="tempoFinalizado" name="tempoFinalizado" [ngModel]="[pagamento.tempoUtilizado + ' Horas']">
             </div>
 
             <!-- Valor a ser pago -->
@@ -50,8 +50,7 @@
             </div>
 
             <div class="col-12 text-right button-group">
-                <button type="button" routerLink="/clientes-form/{{tempo.id}}" class="btn btn-success" (click)="salvar()"><i class="bi bi-floppy2 icon-margin-right"></i>Efetuar Pagamento</button>
+                <button type="button" class="btn btn-success" (click)="salvar()"><i class="bi bi-floppy2 icon-margin-right"></i>Efetuar Pagamento</button>
             </div>
-
     </form>
 </div>
