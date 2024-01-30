@@ -25,10 +25,10 @@
                             </div>
                             <div class="modal-footer">
                                 <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo">
-                                    <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes !== 5;">
+                                    <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes <= 5;">
                                         <button type="button" class="btn btn-secondary" (click)="AtualizarCondutor(itemcondutores, itemveiculos, itemtempo)">Fechar</button>
                                     </ng-container>
-                                    <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes === 5;">
+                                    <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes >= 5">
                                         <button type="button" class="btn btn-success" (click)="AtualizarCondutor(itemcondutores, itemveiculos, itemtempo)"><i class="bi bi-floppy2 icon-margin-right"></i>Continuar</button>
                                         <button type="button" class="btn btn-danger"><i class="bi bi-trash icon-margin-right" (click)="Jeff(itemtempo)"></i>Parar</button>
                                     </ng-container>
@@ -134,7 +134,9 @@
                             <td>
                                 <ng-container *ngFor="let itemtempo of listaDeTempos">
                                     <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo" >
-                                        <span>{{ itemtempo.dateTimeRegistrado }}</span>
+                                        <span>{{ formatarHora(itemtempo.dataHoraInserido)}}</span>
+                                        <span> até </span>
+                                        <span>{{ formatarHora(itemtempo.dataHoraFinalizado)}}</span>
                                     </ng-container>
                                 </ng-container>
                             </td>

@@ -11,6 +11,7 @@ import { CondutorService } from '../../service/condutor/condutor.service';
 
 import { Veiculo } from '../../model/veiculo/veiculo';
 import { VeiculoService } from '../../service/veiculo/veiculo.service';
+//import { LuxonModule } from "@angular-luxon/angular";
 
 import * as luxon from 'luxon';
 
@@ -18,6 +19,7 @@ import * as luxon from 'luxon';
   selector: "app-cadastro-tempo",
   standalone: true,
   imports: [SharedComponents],
+  //LuxonModule,
   templateUrl: "./cadastro-tempo.component.html",
   styleUrl: "./cadastro-tempo.component.css",
 })
@@ -44,6 +46,10 @@ export class CadastroTempoComponent implements OnInit {
   listaDeTempos: Tempo[] = [];
   listaFinal: Tempo[] = [];
 
+  tempoReal: Date = new Date();
+  itemtempo: any;
+  timer: any;
+
   constructor(
     private service: TempoService,
     private condutorService: CondutorService,
@@ -66,7 +72,8 @@ export class CadastroTempoComponent implements OnInit {
 
   openModal(): void {
     const modalElement: HTMLElement | null = document.getElementById("myModal");
-    const bodyElement: HTMLElement | null = document.getElementById("efeito_modal");
+    const bodyElement: HTMLElement | null =
+      document.getElementById("efeito_modal");
     if (modalElement && bodyElement) {
       modalElement.className = "modal fade show";
       modalElement.style.display = "block";
@@ -78,7 +85,8 @@ export class CadastroTempoComponent implements OnInit {
 
   closeModal(): void {
     const modalElement: HTMLElement | null = document.getElementById("myModal");
-    const bodyElement: HTMLElement | null = document.getElementById("efeito_modal");
+    const bodyElement: HTMLElement | null =
+      document.getElementById("efeito_modal");
     if (modalElement && bodyElement) {
       modalElement.className = "modal fade";
       modalElement.style.display = "none";
@@ -127,13 +135,8 @@ export class CadastroTempoComponent implements OnInit {
     this.service.getAll().subscribe({
       next: async (response) => {
         const end = Date.now();
-        console.log("Tempo de execução: " + (end - start) + "ms");
         this.listaDeTempos = response;
         this.listaFinal = response;
-        console.log("response: " + JSON.stringify(response));
-        console.log(
-          "listaDeTempos = response: " + JSON.stringify(this.listaDeTempos)
-        );
       },
       error: (responseError) => {
         console.log("error: " + JSON.stringify(responseError));
@@ -209,6 +212,8 @@ export class CadastroTempoComponent implements OnInit {
     veiculo: Veiculo,
     controleTempo: ControleTempo
   ): void {
+    console.log("Entrou no salvar");
+
     if (!condutor || !veiculo || !controleTempo) {
       this.exibeMensagem2 = true;
       if (!condutor) {
@@ -219,8 +224,11 @@ export class CadastroTempoComponent implements OnInit {
         this.textoMensagem = "Tempo não informado";
       }
     } else {
-
-      controleTempo = this.fromStringThree(controleTempo, 1)
+      if (!controleTempo.valuetwo) {
+        console.log("entrou no alterar data inicial");
+        controleTempo.valuetwo = this.fromStringTwo();
+      }
+      controleTempo = this.fromStringThree(controleTempo, 1);
 
       const tempoSalvar: Tempo = {
         id: this.tempo.id,
@@ -228,7 +236,7 @@ export class CadastroTempoComponent implements OnInit {
         veiculo: veiculo.id,
         tempoRegistrado: controleTempo.name,
         dateTimeRegistrado: controleTempo.value,
-        dataHoraInserido: this.fromStringTwo(),
+        dataHoraInserido: controleTempo.valuetwo,
         dataHoraFinalizado: controleTempo.valuethree,
         atualizacoes: (controleTempo.atualiza = 1),
       };
@@ -265,7 +273,6 @@ export class CadastroTempoComponent implements OnInit {
   }
 
   alterarTempo(tempo: Tempo, controleTempo: ControleTempo): void {
-    
     tempo.atualizacoes = tempo.atualizacoes + 1;
     controleTempo = this.fromStringThree(controleTempo, tempo.atualizacoes);
 
@@ -273,7 +280,6 @@ export class CadastroTempoComponent implements OnInit {
     tempo.dateTimeRegistrado = controleTempo.value;
     tempo.dataHoraInserido = controleTempo.valuetwo;
     tempo.dataHoraFinalizado = controleTempo.valuethree;
-    
 
     if (!tempo) {
       this.exibeMensagem = true;
@@ -300,7 +306,7 @@ export class CadastroTempoComponent implements OnInit {
 
   Jeff(tempo: Tempo): void {
     this.closeModal();
-    console.log('Tempo: '+ JSON.stringify(tempo))
+    console.log("Tempo: " + JSON.stringify(tempo));
     if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
       this.exibeMensagem = true;
       this.textoMensagem = "ID do tempo não definido ou inválido.";
@@ -330,58 +336,68 @@ export class CadastroTempoComponent implements OnInit {
     return dataAtualFormatada;
   }
 
-  fromStringThree(controleTempo: ControleTempo, t: number): ControleTempo {
-    
+  fromStringThree(
+    controleTempo: ControleTempo,
+    tentativas: number
+  ): ControleTempo {
     let horasAdicionar: number;
-    let dataAtual = luxon.DateTime.local();
-    let dataFutura = luxon.DateTime.local();
+    let dataHoraSemUnidades = controleTempo.valuetwo.replace(/[hms]/g, "");
+    let dataHoraRegistrado = luxon.DateTime.fromFormat(
+      dataHoraSemUnidades,
+      "dd/mm/yyyy hh:mm:ss"
+    );
+    let dataFutura;
 
-    if (!controleTempo.valuetwo && t > 1){
-      horasAdicionar = t + 1;
-      console.log("Possui Atribuição")
+    console.log("controleTempo.valuetwo::::::" + controleTempo.valuetwo);
+    console.log("dataHoraSemUnidades:::::::::" + dataHoraSemUnidades);
+    console.log("dataHoraRegistrado::::::::::" + dataHoraRegistrado);
+    console.log("tentativas::::::::::::::::::" + tentativas);
+
+    if (tentativas > 1) {
+      horasAdicionar = tentativas;
+      console.log("Possui Atribuição");
       switch (controleTempo.name) {
-          case "01:00 Hora":
-            controleTempo.name = "02:00 Horas";
-            break;
-          case "02:00 Horas":
-            controleTempo.name = "03:00 Horas";
-            break;
-          case "03:00 Horas":
-            controleTempo.name = "04:00 Horas";
-            break;
-          case "04:00 Horas":
-            controleTempo.name = "Automático";
-            break;
-          default:
-            controleTempo.name = "Automático";
-        }
-      dataFutura = dataAtual.plus({ hours: horasAdicionar });
+        case "01:00 Hora":
+          controleTempo.name = "02:00 Horas";
+          break;
+        case "02:00 Horas":
+          controleTempo.name = "03:00 Horas";
+          break;
+        case "03:00 Horas":
+          controleTempo.name = "04:00 Horas";
+          break;
+        case "04:00 Horas":
+          controleTempo.name = "Automático";
+          break;
+        default:
+          controleTempo.name = "Automático";
+      }
+      dataFutura = dataHoraRegistrado.plus({ hours: horasAdicionar });
       controleTempo.valuethree = this.formatarData(dataFutura.toJSDate());
-    }else{
-
+    } else {
       console.log("Primeira Atribuição");
 
       switch (controleTempo.name) {
         case "01:00 Hora":
-          horasAdicionar = 1
+          horasAdicionar = 1;
           break;
         case "02:00 Horas":
-          horasAdicionar = 2
+          horasAdicionar = 2;
           break;
         case "03:00 Horas":
-          horasAdicionar = 3
+          horasAdicionar = 3;
           break;
         case "04:00 Horas":
-          horasAdicionar = 4
+          horasAdicionar = 4;
           break;
         default:
-          horasAdicionar = 1
-      } 
-      dataFutura = dataAtual.plus({ hours: horasAdicionar });
+          horasAdicionar = 1;
+      }
+      dataFutura = dataHoraRegistrado.plus({ hours: horasAdicionar });
       controleTempo.valuethree = this.formatarData(dataFutura.toJSDate());
     }
 
-  return controleTempo;  
+    return controleTempo;
   }
 
   formatarData(data: Date): string {
@@ -392,6 +408,15 @@ export class CadastroTempoComponent implements OnInit {
     const minuto = ("0" + data.getMinutes()).slice(-2);
     const segundo = ("0" + data.getSeconds()).slice(-2);
     return `${dia}/${mes}/${ano} ${hora}h:${minuto}m:${segundo}s`;
+  }
+
+  formatarHora(dataString: string): string {
+    const parts = dataString.split(/[\s/:\h:m:s]/);
+    console.log(parts);
+    const hora = parts[3];
+    const minuto = parts[5];
+    const segundo = parts[7];
+    return `${hora}h:${minuto}m:${segundo}s`;
   }
 
   verificarTempo(condutorId: number, veiculoId: number): boolean {
@@ -410,19 +435,22 @@ export class CadastroTempoComponent implements OnInit {
       const temposComDiferenca = this.listaFinal.map((tempo) => {
         let dataAtual = luxon.DateTime.local();
         let dataHoraSemUnidades = tempo.dataHoraInserido.replace(/[hms]/g, "");
-        let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
+        let dataHoraRegistrado = luxon.DateTime.fromFormat(
+          dataHoraSemUnidades,
+          "dd/mm/yyyy hh:mm:ss"
+        );
         let diferenca = dataAtual.diff(dataHoraRegistrado, "seconds").seconds;
-
+        
         return {
           tempo: tempo,
-          diferenca: diferenca,
+          diferenca: diferenca
         };
       });
 
       temposComDiferenca.forEach((tempo) => {
-          if (tempo.diferenca >= 3600) {
-            this.openModal();
-          }
+        if (tempo.diferenca >= 3600) {
+          this.openModal();
+        }
       });
     }
   }
