@@ -24,5 +24,4 @@ export class PagamentoService {
   add(pagamento: Pagamento): Observable<Pagamento> {
     return this.http.post<Pagamento>(this.apiUrl, pagamento);
   }
-
 }

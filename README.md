@@ -1,4 +1,4 @@
-# Primeiros passos
+## Primeiros passos
 
 Instalar Node JS (Download pela internet)
 

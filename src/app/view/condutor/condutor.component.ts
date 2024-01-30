@@ -67,7 +67,7 @@ export class CondutorComponent implements OnInit  {
       .subscribe({
         next: (response) => {
           this.exibeMensagem = true;
-          this.textoMensagem = 'Veículo excluído com sucesso.';
+          this.textoMensagem = 'Condutor excluído com sucesso.';
           this.listaDeCondutores.splice(this.listaDeCondutores.indexOf(this.condutor), 1);
           this.condutor = new Condutor;
         },
@@ -84,7 +84,7 @@ export class CondutorComponent implements OnInit  {
       .subscribe({
         next: (response) => {
           this.exibeMensagem = true;
-          this.textoMensagem = 'Veículo alterado com sucesso.';
+          this.textoMensagem = 'Condutor alterado com sucesso.';
           this.condutor = new Condutor;
           this.getAll();
         },
@@ -117,8 +117,6 @@ export class CondutorComponent implements OnInit  {
   }
 
   salvar() {
-    //console.log(JSON.stringify(this.condutor));
-
     if(this.condutor.id){
       this.alterar();
     }else{
@@ -127,7 +125,7 @@ export class CondutorComponent implements OnInit  {
       .subscribe({
         next: (response) => {
           this.exibeMensagem = true;
-          this.textoMensagem = 'Veículo cadastrado com sucesso.';
+          this.textoMensagem = 'Condutor cadastrado com sucesso.';
           this.condutor = new Condutor;
           this.listaDeCondutores.push(response);
         },

@@ -121,7 +121,6 @@ export class PagamentoComponent implements OnInit {
   }
 
   salvar() {
-    console.log(this.pagamento);
     this.service
     .add(this.pagamento)
     .subscribe({
@@ -135,12 +134,6 @@ export class PagamentoComponent implements OnInit {
           console.log('error: ' + JSON.stringify(responseError));
       }
     });
-  }
-
-  abrirRecibo() {
-    //this.idPagamento = this.idPagamentoSelecionado;
-    // Abre a tela de recibos
-    // ...
   }
 
 }
