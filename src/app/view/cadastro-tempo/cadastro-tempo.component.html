@@ -25,13 +25,12 @@
                             </div>
                             <div class="modal-footer">
                                 <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo">
-                                    <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes !== 5;">
-                                        <button type="button" class="btn btn-secondary" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)">Fechar</button>
+                                    <ng-container *ngIf="itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes <= 5;">
+                                        <button type="button" class="btn btn-secondary" (click)="AtualizarCondutor(itemcondutores, itemveiculos, itemtempo)">Fechar</button>
                                     </ng-container>
-                                    <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes === 5;">
-                                        <button type="button" class="btn btn-success" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"><i class="bi bi-floppy2 icon-margin-right"></i>Iniciar</button>
-                                        <button type="button" class="btn btn-danger" (click)="acabaTempo(itemtempo)"><i class="bi bi-trash icon-margin-right"></i>Parar</button>
-                                        <button type="button" class="btn btn-danger" [routerLink]="['/pagamentos', itemtempo.id]"><i class="bi bi-trash icon-margin-right"></i>Redirecionar</button>
+                                    <ng-container *ngIf="itemtempo.tempoRegistrado === '01:00 Hora' || itemtempo.tempoRegistrado === '02:00 Horas' || itemtempo.tempoRegistrado === '03:00 Horas' || itemtempo.tempoRegistrado === '04:00 Horas' || itemtempo.tempoRegistrado === 'Automático' && itemtempo.atualizacoes >= 5">
+                                        <button type="button" class="btn btn-success" (click)="AtualizarCondutor(itemcondutores, itemveiculos, itemtempo)"><i class="bi bi-floppy2 icon-margin-right"></i>Continuar</button>
+                                        <button type="button" class="btn btn-danger" [routerLink]="['/pagamentos', itemtempo.id]"><i class="bi bi-trash icon-margin-right"></i>Parar</button>
                                     </ng-container>
                                 </ng-container>
                             </div>
@@ -102,10 +101,10 @@
     </form>
     <div class="mt-2 mb-2 col-12 text-right button-group">
         <ng-container *ngIf="this.tempoSelecionado == undefined || this.tempoSelecionado.tempoRegistrado == undefined">
-            <button type="button" class="btn btn-success text-right" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"> <i class=" mr-2 bi bi-floppy2 icon-margin-right"></i> Salvar </button>
+            <button type="button" class="btn btn-success text-right" (click)="salvar(condutorSelecionado, veiculoSelecionado, controleSelecionado)"> <i class=" mr-2 bi bi-floppy2 icon-margin-right"></i> Iniciar </button>
         </ng-container>
         <ng-container *ngIf="this.tempoSelecionado && this.tempoSelecionado.tempoRegistrado">
-            <button type="button" class="btn btn-danger text-right" > <i class="mr-3 bi bi-trash icon-margin-right" ></i>Parar</button>
+            <button type="button" class="btn btn-danger text-right" [routerLink]="['/pagamentos', tempoSelecionado.id]"> <i class="mr-3 bi bi-trash icon-margin-right" ></i>Parar</button>
         </ng-container>
     </div>
 </div>
@@ -135,7 +134,9 @@
                             <td>
                                 <ng-container *ngFor="let itemtempo of listaDeTempos">
                                     <ng-container *ngIf="itemcondutores.id === itemtempo.condutor && itemveiculos.id === itemtempo.veiculo" >
-                                        <span>{{ itemtempo.tempoRegistrado }}</span>
+                                        <span>{{ formatarHora(itemtempo.dataHoraInserido)}}</span>
+                                        <span> até </span>
+                                        <span>{{ formatarHora(itemtempo.dataHoraFinalizado)}}</span>
                                     </ng-container>
                                 </ng-container>
                             </td>

@@ -121,7 +121,6 @@ export class PagamentoComponent implements OnInit {
   }
 
   salvar() {
-    console.log(this.pagamento);
     this.service
     .add(this.pagamento)
     .subscribe({

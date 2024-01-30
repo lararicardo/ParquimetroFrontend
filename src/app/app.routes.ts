@@ -14,7 +14,8 @@ export const routes: Routes = [
     { path: 'condutores', component: CondutorComponent },
     { path: 'tempos', component: CadastroTempoComponent },
     { path: 'pagamentos', component: PagamentoComponent },
-    { path: 'pagamentos/:id', component: PagamentoComponent }
+    { path: 'pagamentos/:id', component: PagamentoComponent },
+    //{ path: 'recibos/:id', component: ReciboComponent }
 ];
 
 @NgModule({

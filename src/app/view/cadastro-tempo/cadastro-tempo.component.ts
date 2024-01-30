@@ -11,14 +11,15 @@ import { CondutorService } from '../../service/condutor/condutor.service';
 
 import { Veiculo } from '../../model/veiculo/veiculo';
 import { VeiculoService } from '../../service/veiculo/veiculo.service';
+//import { LuxonModule } from "@angular-luxon/angular";
 
 import * as luxon from 'luxon';
-import { Router } from '@angular/router';
 
 @Component({
   selector: "app-cadastro-tempo",
   standalone: true,
   imports: [SharedComponents],
+  //LuxonModule,
   templateUrl: "./cadastro-tempo.component.html",
   styleUrl: "./cadastro-tempo.component.css",
 })
@@ -38,35 +39,35 @@ export class CadastroTempoComponent implements OnInit {
   controleSelecionado!: ControleTempo;
   tempoSelecionado!: Tempo;
 
-  controleDeTempos!: ControleTempo[];
+  controleDeTempos: ControleTempo[] = [];
 
-  listaDeCondutores!: Condutor[];
-  listaDeVeiculos!: Veiculo[];
-  listaDeTempos!: Tempo[];
-  listaFinal!: Tempo[];
-  
+  listaDeCondutores: Condutor[] = [];
+  listaDeVeiculos: Veiculo[] = [];
+  listaDeTempos: Tempo[] = [];
+  listaFinal: Tempo[] = [];
+
+  tempoReal: Date = new Date();
+  itemtempo: any;
+  timer: any;
+
   constructor(
     private service: TempoService,
     private condutorService: CondutorService,
-    private veiculoService: VeiculoService,
-    private router: Router
-
+    private veiculoService: VeiculoService
   ) {
     this.tempo = new Tempo();
     this.controleSelecionado;
     this.tempoSelecionado = new Tempo();
   }
 
-envioIdTempo(): void {
-  this.router.navigateByUrl('/pagamentos/'+this.tempo.id);
-}
-
   ngOnInit(): void {
     this.getAllCondutores();
     this.getAllVeiculos();
     this.getAllTempos();
     this.getAll();
-    this.iniciarContadores();
+    setTimeout(() => {
+      this.iniciarContadores();
+    }, 3000);
   }
 
   openModal(): void {
@@ -95,7 +96,7 @@ envioIdTempo(): void {
     }
   }
 
-  getAllCondutores() {
+  getAllCondutores(): void {
     this.condutorService.getAll().subscribe({
       next: (response) => {
         this.listaDeCondutores = response;
@@ -106,7 +107,7 @@ envioIdTempo(): void {
     });
   }
 
-  getAllVeiculos() {
+  getAllVeiculos(): void {
     this.veiculoService.getAll().subscribe({
       next: (response) => {
         this.listaDeVeiculos = response;
@@ -117,7 +118,7 @@ envioIdTempo(): void {
     });
   }
 
-  getAllTempos() {
+  getAllTempos(): void {
     this.service.getListaDeTempos().subscribe({
       next: (response) => {
         this.controleDeTempos = response;
@@ -128,10 +129,14 @@ envioIdTempo(): void {
     });
   }
 
-  getAll() {
+  getAll(): void {
+    console.log("Peguei a Lista");
+    const start = Date.now();
     this.service.getAll().subscribe({
-      next: (response) => {
+      next: async (response) => {
+        const end = Date.now();
         this.listaDeTempos = response;
+        this.listaFinal = response;
       },
       error: (responseError) => {
         console.log("error: " + JSON.stringify(responseError));
@@ -139,7 +144,7 @@ envioIdTempo(): void {
     });
   }
 
-  selecionar(idC: number, idV: number) {
+  selecionar(idC: number, idV: number): void {
     this.condutorSelecionado = this.listaDeCondutores.find((v) => v.id == idC)!;
     this.veiculoSelecionado = this.listaDeVeiculos.find((v) => v.id == idV)!;
     this.tempoSelecionado = this.listaDeTempos.find(
@@ -147,7 +152,7 @@ envioIdTempo(): void {
     )!;
   }
 
-  verificaCondutor() {
+  verificaCondutor(): void {
     if (this.condutorSelecionado) {
       if (this.condutorSelecionado.veiculos) {
         this.listaDeVeiculos = this.condutorSelecionado.veiculos;
@@ -165,7 +170,7 @@ envioIdTempo(): void {
     }
   }
 
-  verificaVeiculo() {
+  verificaVeiculo(): void {
     if (this.condutorSelecionado) {
       if (this.veiculoSelecionado) {
         this.tempoSelecionado = this.listaDeTempos.find(
@@ -188,8 +193,27 @@ envioIdTempo(): void {
     }
   }
 
-  salvar(condutor: Condutor, veiculo: Veiculo, controleTempo: ControleTempo) {
+  AtualizarCondutor(condutor: Condutor, veiculo: Veiculo, tempo: Tempo) {
     this.closeModal();
+
+    const controleTempo: ControleTempo = {
+      name: tempo.tempoRegistrado,
+      value: tempo.dateTimeRegistrado,
+      valuetwo: tempo.dataHoraInserido,
+      valuethree: tempo.dataHoraFinalizado,
+      atualiza: tempo.atualizacoes,
+    };
+
+    this.salvar(condutor, veiculo, controleTempo);
+  }
+
+  salvar(
+    condutor: Condutor,
+    veiculo: Veiculo,
+    controleTempo: ControleTempo
+  ): void {
+    console.log("Entrou no salvar");
+
     if (!condutor || !veiculo || !controleTempo) {
       this.exibeMensagem2 = true;
       if (!condutor) {
@@ -200,14 +224,20 @@ envioIdTempo(): void {
         this.textoMensagem = "Tempo não informado";
       }
     } else {
+      if (!controleTempo.valuetwo) {
+        console.log("entrou no alterar data inicial");
+        controleTempo.valuetwo = this.fromStringTwo();
+      }
+      controleTempo = this.fromStringThree(controleTempo, 1);
+
       const tempoSalvar: Tempo = {
         id: this.tempo.id,
         condutor: condutor.id,
         veiculo: veiculo.id,
         tempoRegistrado: controleTempo.name,
         dateTimeRegistrado: controleTempo.value,
-        dataHoraInserido: this.fromStringTwo(controleTempo.name),
-        dataHoraFinalizado: this.fromStringThree(controleTempo.name, 1),
+        dataHoraInserido: controleTempo.valuetwo,
+        dataHoraFinalizado: controleTempo.valuethree,
         atualizacoes: (controleTempo.atualiza = 1),
       };
 
@@ -228,7 +258,9 @@ envioIdTempo(): void {
             this.tempo = new Tempo();
             this.listaDeTempos.push(response);
             this.getAll();
-            this.iniciarContadores();
+            setTimeout(() => {
+              this.iniciarContadores();
+            }, 3000);
           },
           error: (responseError) => {
             this.exibeMensagem = true;
@@ -240,57 +272,29 @@ envioIdTempo(): void {
     }
   }
 
-  alterarTempo(tempo: Tempo, controleTempo: ControleTempo) {
-    if (tempo.atualizacoes !== 5) {
-      tempo.tempoRegistrado = controleTempo.name;
-      tempo.dateTimeRegistrado = controleTempo.value;
-      tempo.dataHoraInserido = this.fromStringTwo(controleTempo.name);
-      tempo.atualizacoes = tempo.atualizacoes + 1;
-      tempo.dataHoraFinalizado = this.fromStringThree(
-        controleTempo.name,
-        tempo.atualizacoes
-      );
+  alterarTempo(tempo: Tempo, controleTempo: ControleTempo): void {
+    tempo.atualizacoes = tempo.atualizacoes + 1;
+    controleTempo = this.fromStringThree(controleTempo, tempo.atualizacoes);
 
-      if (!tempo) {
-        this.exibeMensagem = true;
-        this.textoMensagem = "Problema ao alterar o tempo, tente novamente.";
-      }
-      this.service.update(tempo).subscribe({
-        next: (response) => {
-          this.exibeMensagem = true;
-          this.textoMensagem = "Tempo alterado com sucesso.";
-          this.tempo = new Tempo();
-          this.listaDeTempos.push(response);
-          this.getAll();
-          this.iniciarContadores();
-        },
-        error: (responseError) => {
-          this.exibeMensagem = true;
-          this.textoMensagem = JSON.stringify(responseError.error);
-          console.log("error: " + JSON.stringify(responseError));
-        },
-      });
-    } else {
+    tempo.tempoRegistrado = controleTempo.name;
+    tempo.dateTimeRegistrado = controleTempo.value;
+    tempo.dataHoraInserido = controleTempo.valuetwo;
+    tempo.dataHoraFinalizado = controleTempo.valuethree;
+
+    if (!tempo) {
       this.exibeMensagem = true;
-      this.textoMensagem = "Não pode mais adicionar tempo.";
+      this.textoMensagem = "Problema ao alterar o tempo, tente novamente.";
     }
-  }
-
-  acabaTempo(tempo: Tempo) {
-    this.closeModal();
-    if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
-      this.exibeMensagem = true;
-      this.textoMensagem = "ID do tempo não definido ou inválido.";
-      return;
-    }
-
-    this.service.delete(tempo.id).subscribe({
+    this.service.update(tempo).subscribe({
       next: (response) => {
         this.exibeMensagem = true;
-        //this.textoMensagem = "Tempo Deletado com sucesso.";
-        //this.tempo = new Tempo();
+        this.textoMensagem = "Tempo alterado com sucesso.";
+        this.tempo = new Tempo();
         this.listaDeTempos.push(response);
         this.getAll();
+        setTimeout(() => {
+          this.iniciarContadores();
+        }, 3000);
       },
       error: (responseError) => {
         this.exibeMensagem = true;
@@ -300,32 +304,100 @@ envioIdTempo(): void {
     });
   }
 
-  fromStringTwo(name: string): string {
+  Jeff(tempo: Tempo): void {
+    this.closeModal();
+    console.log("Tempo: " + JSON.stringify(tempo));
+    if (tempo.id === undefined || !Number.isInteger(tempo.id)) {
+      this.exibeMensagem = true;
+      this.textoMensagem = "ID do tempo não definido ou inválido.";
+      return;
+    }
+
+    this.service.delete(tempo.id).subscribe({
+      next: (response) => {
+        this.exibeMensagem = true;
+        this.textoMensagem = "Tempo Deletado com sucesso.";
+        this.tempo = new Tempo();
+        this.listaDeTempos.push(response);
+        this.getAll();
+        location.reload();
+      },
+      error: (responseError) => {
+        this.exibeMensagem = true;
+        this.textoMensagem = JSON.stringify(responseError.error);
+        console.log("error: " + JSON.stringify(responseError));
+      },
+    });
+  }
+
+  fromStringTwo(): string {
     const dataAtual = luxon.DateTime.local();
     const dataAtualFormatada = this.formatarData(dataAtual.toJSDate());
     return dataAtualFormatada;
   }
 
-  fromStringThree(name: string, t: number): string {
+  fromStringThree(
+    controleTempo: ControleTempo,
+    tentativas: number
+  ): ControleTempo {
     let horasAdicionar: number;
-    let dataAtual = luxon.DateTime.local();
-    let dataFutura = luxon.DateTime.local();
+    let dataHoraSemUnidades = controleTempo.valuetwo.replace(/[hms]/g, "");
+    let dataHoraRegistrado = luxon.DateTime.fromFormat(
+      dataHoraSemUnidades,
+      "dd/mm/yyyy hh:mm:ss"
+    );
+    let dataFutura;
 
-    if ((name === "Automático" && t === 1) || name === "01:00 Horas") {
-      horasAdicionar = 1;
-    } else if ((name === "Automático" && t === 2) || name === "02:00 Horas") {
-      horasAdicionar = 2;
-    } else if ((name === "Automático" && t === 3) || name === "03:00 Horas") {
-      horasAdicionar = 3;
-    } else if ((name === "Automático" && t === 4) || name === "04:00 Horas") {
-      horasAdicionar = 4;
+    console.log("controleTempo.valuetwo::::::" + controleTempo.valuetwo);
+    console.log("dataHoraSemUnidades:::::::::" + dataHoraSemUnidades);
+    console.log("dataHoraRegistrado::::::::::" + dataHoraRegistrado);
+    console.log("tentativas::::::::::::::::::" + tentativas);
+
+    if (tentativas > 1) {
+      horasAdicionar = tentativas;
+      console.log("Possui Atribuição");
+      switch (controleTempo.name) {
+        case "01:00 Hora":
+          controleTempo.name = "02:00 Horas";
+          break;
+        case "02:00 Horas":
+          controleTempo.name = "03:00 Horas";
+          break;
+        case "03:00 Horas":
+          controleTempo.name = "04:00 Horas";
+          break;
+        case "04:00 Horas":
+          controleTempo.name = "Automático";
+          break;
+        default:
+          controleTempo.name = "Automático";
+      }
+      dataFutura = dataHoraRegistrado.plus({ hours: horasAdicionar });
+      controleTempo.valuethree = this.formatarData(dataFutura.toJSDate());
     } else {
-      horasAdicionar = 0;
+      console.log("Primeira Atribuição");
+
+      switch (controleTempo.name) {
+        case "01:00 Hora":
+          horasAdicionar = 1;
+          break;
+        case "02:00 Horas":
+          horasAdicionar = 2;
+          break;
+        case "03:00 Horas":
+          horasAdicionar = 3;
+          break;
+        case "04:00 Horas":
+          horasAdicionar = 4;
+          break;
+        default:
+          horasAdicionar = 1;
+      }
+      dataFutura = dataHoraRegistrado.plus({ hours: horasAdicionar });
+      controleTempo.valuethree = this.formatarData(dataFutura.toJSDate());
     }
 
-    dataFutura = dataAtual.plus({ hours: horasAdicionar });
-    const dataFuturaFormatada = this.formatarData(dataFutura.toJSDate());
-    return dataFuturaFormatada;
+    return controleTempo;
   }
 
   formatarData(data: Date): string {
@@ -336,6 +408,15 @@ envioIdTempo(): void {
     const minuto = ("0" + data.getMinutes()).slice(-2);
     const segundo = ("0" + data.getSeconds()).slice(-2);
     return `${dia}/${mes}/${ano} ${hora}h:${minuto}m:${segundo}s`;
+  }
+
+  formatarHora(dataString: string): string {
+    const parts = dataString.split(/[\s/:\h:m:s]/);
+    console.log(parts);
+    const hora = parts[3];
+    const minuto = parts[5];
+    const segundo = parts[7];
+    return `${hora}h:${minuto}m:${segundo}s`;
   }
 
   verificarTempo(condutorId: number, veiculoId: number): boolean {
@@ -349,67 +430,25 @@ envioIdTempo(): void {
     return false;
   }
 
-  /* iniciarContadores() {
-
-    this.getAll();
-    
-    if (this.listaDeTempos && this.listaDeTempos.length > 0) {
-      this.listaDeTempos.filter((item) => item !== null).forEach((item) => {
-      let dataAtual = luxon.DateTime.local();
-      console.log("horas0::::::::::::" + dataAtual);
-      let dataHoraSemUnidades = item.dataHoraInserido.replace(/[hms]/g, "");
-      console.log("horas1::::::::::::" + dataHoraSemUnidades);
-      let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
-      console.log("horas::::::::::::" + dataHoraRegistrado);
-        if (dataHoraRegistrado.isValid) {
-          let intervalo = setInterval(() => {
-            let diferencaSegundos = dataAtual.diff(
-              dataHoraRegistrado,
-              "seconds"
-            ).seconds;
-            if (diferencaSegundos >= 1) {
-              clearInterval(intervalo);
-              this.openModal();
-            }
-          }, 1000);
-        } else {
-          console.error(
-            "A data e hora registradas não são válidas:",
-            dataHoraRegistrado
-          );
-        }
-      });
-
-    }
-      
-  }*/
-
-  iniciarContadores() {
-
-    this.service.getAll().subscribe({
-      next: (response) => {
-        this.listaFinal = response;
-      },
-      error: (responseError) => {
-        console.log("error: " + JSON.stringify(responseError));
-      },
-    });
-
+  iniciarContadores(): void {
     if (this.listaFinal && this.listaFinal.length > 0) {
       const temposComDiferenca = this.listaFinal.map((tempo) => {
         let dataAtual = luxon.DateTime.local();
         let dataHoraSemUnidades = tempo.dataHoraInserido.replace(/[hms]/g, "");
-        let dataHoraRegistrado = luxon.DateTime.fromFormat(dataHoraSemUnidades, "dd/mm/yyyy hh:mm:ss");
-        
+        let dataHoraRegistrado = luxon.DateTime.fromFormat(
+          dataHoraSemUnidades,
+          "dd/mm/yyyy hh:mm:ss"
+        );
         let diferenca = dataAtual.diff(dataHoraRegistrado, "seconds").seconds;
+        
         return {
           tempo: tempo,
-          diferenca: diferenca,
+          diferenca: diferenca
         };
       });
 
       temposComDiferenca.forEach((tempo) => {
-        if (tempo.diferenca >= 1) {
+        if (tempo.diferenca >= 3600) {
           this.openModal();
         }
       });
