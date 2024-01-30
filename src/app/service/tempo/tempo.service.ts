@@ -16,7 +16,7 @@ export class TempoService {
 
   getAll(): Observable<Tempo[]> {
       return this.http.get<Tempo[]>(this.apiUrl);
-  }
+    }
 
   getListaDeTempos(): Observable<ControleTempo[]> {
     return this.http.get<ControleTempo[]>(`${this.apiUrl}/cadastro`);
@@ -33,13 +33,5 @@ export class TempoService {
   add(Tempo: Tempo): Observable<Tempo> {
     return this.http.post<Tempo>(this.apiUrl, Tempo);
   }
-
-  getTempoById(id:number): Observable<Tempo> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
-  }
-
-
-
-
 
 }

@@ -42,9 +42,6 @@
                 <ng-option *ngFor="let veiculo of veiculos" [value]="veiculo">{{ veiculo.placa }} | {{ veiculo.modelo }}</ng-option>
              </ng-select>
         </div>
-
-
-
         <div class="col-12 text-right button-group">
             <button type="button" class="btn btn-primary" (click)="novo()"><i class="bi bi-plus-circle-fill icon-margin-right"></i>Novo</button>
             <button type="button" class="btn btn-primary" (click)="salvar()"><i class="bi bi-floppy2 icon-margin-right"></i>Salvar</button>
