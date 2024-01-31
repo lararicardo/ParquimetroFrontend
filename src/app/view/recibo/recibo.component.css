@@ -1,0 +1,23 @@
+.text-space{
+    display: flex;
+
+    width: 500px;
+
+    background: rgba(0,0,255,0.2);
+
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.text-space>ul{
+
+    text-align: left;
+
+}
+
+.text-space>ul>li{
+
+    margin-top: 10px;
+
+}
